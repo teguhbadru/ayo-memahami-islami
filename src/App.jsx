@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth, AuthScreen, AccountBar } from './auth.jsx';
 
 // Data lengkap 15 cerita berdasarkan modul 48 halaman
 const LEVELS = [
@@ -328,7 +329,15 @@ const LEVELS = [
   }
 ];
 
-export default function AyoMemahamiApp() {
+function AyoMemahamiAppInner() {
+  const { supabase, user, profile, isConfigured } = useAuth();
+  const [guestMode, setGuestMode] = useState(() => localStorage.getItem('ayo_memahami_guest') === 'yes');
+  const [showAdultDashboard, setShowAdultDashboard] = useState(false);
+  const [linkedStudents, setLinkedStudents] = useState([]);
+  const [linkCode, setLinkCode] = useState('');
+  const [linkMessage, setLinkMessage] = useState('');
+  const [linkError, setLinkError] = useState('');
+  const [linkBusy, setLinkBusy] = useState(false);
   const [currentView, setCurrentView] = useState("home"); // home, levels, story, monitor, certificate
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedStory, setSelectedStory] = useState(null);
@@ -338,22 +347,61 @@ export default function AyoMemahamiApp() {
   const [checkedState, setCheckedState] = useState({});
   const [showFeedback, setShowFeedback] = useState({});
 
-  // Load progress from localStorage on mount
+  // Load local guest progress or cloud progress for the signed-in student.
   useEffect(() => {
-    const saved = localStorage.getItem("ayo_memahami_scores");
-    if (saved) {
-      try {
-        setUserScores(JSON.parse(saved));
-      } catch (e) {
-        console.error(e);
-      }
+    if (user && profile?.role === 'student' && supabase) {
+      supabase.from('student_progress').select('story_id,score').eq('student_id', user.id)
+        .then(({ data, error }) => {
+          if (error) console.error('Gagal memuat progres cloud:', error.message);
+          else if (data) setUserScores(Object.fromEntries(data.map(row => [row.story_id, row.score])));
+        });
+      return;
     }
-  }, []);
+    if (!user) {
+      const saved = localStorage.getItem("ayo_memahami_scores");
+      if (saved) { try { setUserScores(JSON.parse(saved)); } catch (e) { console.error(e); } }
+    }
+  }, [user?.id, profile?.role, supabase]);
 
-  const saveScore = (storyId, score) => {
+  const saveScore = async (storyId, score) => {
     const updated = { ...userScores, [storyId]: score };
     setUserScores(updated);
-    localStorage.setItem("ayo_memahami_scores", JSON.stringify(updated));
+    if (user && profile?.role === 'student' && supabase) {
+      const { error } = await supabase.from('student_progress').upsert(
+        { student_id: user.id, story_id: storyId, score, completed_at: new Date().toISOString() },
+        { onConflict: 'student_id,story_id' }
+      );
+      if (error) setShowFeedback(prev => ({...prev, [storyId]: 'Nilai belum tersinkron. Periksa koneksi lalu coba lagi.'}));
+    } else {
+      localStorage.setItem("ayo_memahami_scores", JSON.stringify(updated));
+    }
+  };
+
+  const loadLinkedStudents = async () => {
+    if (!supabase || !user) return;
+    const { data: links, error } = await supabase.from('student_links').select('student_id').eq('adult_id', user.id);
+    if (error) { setLinkError(error.message); return; }
+    const ids = (links || []).map(x => x.student_id);
+    if (!ids.length) { setLinkedStudents([]); return; }
+    const results = await Promise.all([
+      supabase.from('profiles').select('id,full_name,link_code').in('id', ids),
+      supabase.from('student_progress').select('student_id,story_id,score,completed_at').in('student_id', ids)
+    ]);
+    const students = results[0].data || [];
+    const progress = results[1].data || [];
+    setLinkedStudents(students.map(student => ({
+      ...student, progress: progress.filter(p => p.student_id === student.id)
+    })));
+  };
+
+  useEffect(() => { if (showAdultDashboard && user) loadLinkedStudents(); }, [showAdultDashboard, user?.id]);
+
+  const connectStudent = async (event) => {
+    event.preventDefault(); setLinkBusy(true); setLinkError(''); setLinkMessage('');
+    const { error } = await supabase.rpc('link_student_by_code', { p_code: linkCode });
+    if (error) setLinkError(error.message);
+    else { setLinkMessage('Siswa berhasil dihubungkan.'); setLinkCode(''); await loadLinkedStudents(); }
+    setLinkBusy(false);
   };
 
   const handleAnswerChange = (storyId, qIdx, val) => {
@@ -386,9 +434,14 @@ export default function AyoMemahamiApp() {
 
   const totalCompletedStories = Object.keys(userScores).length;
 
+  if (isConfigured && !user && !guestMode) {
+    return <AuthScreenWithGuest onGuest={() => { localStorage.setItem('ayo_memahami_guest','yes'); setGuestMode(true); }} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 text-slate-800 font-sans selection:bg-red-500 selection:text-white pb-16">
       {/* HEADER / NAVIGATION BAR */}
+      {user && <AccountBar onDashboard={() => setShowAdultDashboard(true)} />}
       <header className="bg-gradient-to-r from-[#B70912] to-red-800 text-white shadow-lg sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between">
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setCurrentView("home")}>
@@ -436,6 +489,33 @@ export default function AyoMemahamiApp() {
           </div>
         </div>
       </header>
+
+
+      {showAdultDashboard && (
+        <div className="fixed inset-0 z-[70] bg-slate-950/60 p-4 overflow-y-auto">
+          <div className="max-w-4xl mx-auto my-8 bg-white rounded-3xl shadow-2xl p-6 md:p-8 space-y-6">
+            <div className="flex items-center justify-between gap-3">
+              <div><h2 className="text-2xl font-extrabold text-slate-900">Dashboard Pendamping</h2><p className="text-sm text-slate-500">Pantau kemajuan siswa yang terhubung dengan akun ini.</p></div>
+              <button onClick={() => setShowAdultDashboard(false)} className="rounded-xl bg-slate-100 px-4 py-2 font-bold">Tutup ✕</button>
+            </div>
+            <form onSubmit={connectStudent} className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-3">
+              <input value={linkCode} onChange={e=>setLinkCode(e.target.value)} placeholder="Masukkan kode keluarga siswa" className="flex-1 min-w-0 rounded-xl border border-amber-300 px-4 py-3 uppercase tracking-widest" required />
+              <button disabled={linkBusy} className="bg-[#B70912] text-white font-bold px-5 py-3 rounded-xl disabled:opacity-60">{linkBusy?'Menghubungkan...':'Hubungkan Siswa'}</button>
+            </form>
+            {linkMessage && <p className="text-sm text-emerald-700">{linkMessage}</p>}
+            {linkError && <p className="text-sm text-red-700">{linkError}</p>}
+            {!linkedStudents.length ? <div className="text-center py-10 text-slate-500">Belum ada siswa terhubung. Minta kode keluarga dari akun siswa.</div> :
+              <div className="grid md:grid-cols-2 gap-4">{linkedStudents.map(student => (
+                <div key={student.id} className="border border-slate-200 rounded-2xl p-5">
+                  <h3 className="font-bold text-lg text-slate-900">{student.full_name}</h3>
+                  <p className="text-xs text-slate-500 mb-3">Selesai {student.progress.length}/15 cerita</p>
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-3"><div className="h-full bg-emerald-500" style={{width: (Math.min(100,student.progress.length/15*100)) + '%'}} /></div>
+                  <div className="grid grid-cols-3 gap-2">{student.progress.map(p=><div key={p.story_id} className="bg-slate-50 rounded-lg p-2 text-center"><p className="text-xs text-slate-500">{p.story_id}</p><p className="font-bold text-[#B70912]">{p.score}/5</p></div>)}</div>
+                </div>
+              ))}</div>}
+          </div>
+        </div>
+      )}
 
       {/* MAIN CONTAINER */}
       <main className="max-w-5xl mx-auto px-4 py-6">
@@ -879,6 +959,8 @@ export default function AyoMemahamiApp() {
 
       </main>
 
+      {isConfigured && !user && guestMode && <div className='fixed bottom-3 right-3 z-50'><button onClick={() => {localStorage.removeItem('ayo_memahami_guest');setGuestMode(false);}} className='bg-white border border-red-200 shadow-lg text-[#B70912] text-xs font-bold px-4 py-2 rounded-full'>Masuk / Buat Akun</button></div>}
+
       {/* FOOTER */}
       <footer className="max-w-5xl mx-auto px-4 mt-16 pt-6 border-t border-slate-200 text-center text-xs text-slate-500 space-y-1">
         <p>Ayo Memahami! Modul Latihan Memahami Bacaan Bertahap Edisi Islami oleh Syahrul Ilmi.</p>
@@ -886,4 +968,11 @@ export default function AyoMemahamiApp() {
       </footer>
     </div>
   );
+}
+function AuthScreenWithGuest({ onGuest }) {
+  return <div><AuthScreen /><div className="fixed bottom-5 left-0 right-0 flex justify-center px-4"><button onClick={onGuest} className="bg-white border border-slate-300 shadow-lg text-slate-700 font-semibold text-sm rounded-full px-5 py-3">Lanjut sebagai tamu tanpa akun</button></div></div>;
+}
+
+export default function AyoMemahamiApp() {
+  return <AuthProvider><AyoMemahamiAppInner /></AuthProvider>;
 }
