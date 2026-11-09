@@ -331,7 +331,6 @@ const LEVELS = [
 
 function AyoMemahamiAppInner() {
   const { supabase, user, profile, isConfigured } = useAuth();
-  const [guestMode, setGuestMode] = useState(() => localStorage.getItem('ayo_memahami_guest') === 'yes');
   const [showAdultDashboard, setShowAdultDashboard] = useState(false);
   const [linkedStudents, setLinkedStudents] = useState([]);
   const [linkCode, setLinkCode] = useState('');
@@ -434,8 +433,8 @@ function AyoMemahamiAppInner() {
 
   const totalCompletedStories = Object.keys(userScores).length;
 
-  if (isConfigured && !user && !guestMode) {
-    return <AuthScreenWithGuest onGuest={() => { localStorage.setItem('ayo_memahami_guest','yes'); setGuestMode(true); }} />;
+  if (isConfigured && !user) {
+    return <AuthScreen />;
   }
 
   return (
@@ -959,7 +958,6 @@ function AyoMemahamiAppInner() {
 
       </main>
 
-      {isConfigured && !user && guestMode && <div className='fixed bottom-3 right-3 z-50'><button onClick={() => {localStorage.removeItem('ayo_memahami_guest');setGuestMode(false);}} className='bg-white border border-red-200 shadow-lg text-[#B70912] text-xs font-bold px-4 py-2 rounded-full'>Masuk / Buat Akun</button></div>}
 
       {/* FOOTER */}
       <footer className="max-w-5xl mx-auto px-4 mt-16 pt-6 border-t border-slate-200 text-center text-xs text-slate-500 space-y-1">
@@ -968,9 +966,6 @@ function AyoMemahamiAppInner() {
       </footer>
     </div>
   );
-}
-function AuthScreenWithGuest({ onGuest }) {
-  return <div><AuthScreen /><div className="fixed bottom-5 left-0 right-0 flex justify-center px-4"><button onClick={onGuest} className="bg-white border border-slate-300 shadow-lg text-slate-700 font-semibold text-sm rounded-full px-5 py-3">Lanjut sebagai tamu tanpa akun</button></div></div>;
 }
 
 export default function AyoMemahamiApp() {
