@@ -433,9 +433,7 @@ function AyoMemahamiAppInner() {
 
   const totalCompletedStories = Object.keys(userScores).length;
 
-  if (isConfigured && !user) {
-    return <AuthScreen />;
-  }
+  // Akses belajar dibuka tanpa wajib login; akun tetap opsional untuk fitur sinkronisasi.
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 text-slate-800 font-sans selection:bg-red-500 selection:text-white pb-16">
