@@ -1,0 +1,153 @@
+/* Ruang Cendekia — commercial prelaunch UI, November 2026 */
+.co-landing{--co-green:#315a40;--co-deep:#2d4033;--co-sand:#f8f4eb;--co-cream:#fffaf2;--co-gold:#dbaa76;color:var(--co-deep)}
+.co-landing button,.co-plan-page button{font-family:inherit}
+.co-hero{background:radial-gradient(circle at 85% 40%,#e4ecdc 0,transparent 47%),linear-gradient(125deg,#fffcf7,#f7f4eb);padding:84px 0 108px;overflow:hidden}
+.co-hero-layout{display:grid;grid-template-columns:1.06fr .94fr;gap:90px;align-items:center}
+.co-topnote,.co-label{font-size:10px;font-weight:800;letter-spacing:2.1px;color:#9a785d}
+.co-topnote{display:inline-flex;align-items:center;gap:10px;border:1px solid #e6d8c6;background:#fff7eb;padding:10px 14px;border-radius:30px;color:#866a51;font-size:10px;letter-spacing:1.2px}
+.co-note-dot{width:7px;height:7px;background:#b68a55;border-radius:50%}
+.co-hero h1{font-family:"Plus Jakarta Sans",sans-serif;font-size:clamp(45px,4.8vw,72px);line-height:1.17;letter-spacing:-3.7px;font-weight:800;color:#2d4433;margin:28px 0 24px}
+.co-hero h1 em,.co-section h2 em,.co-plan-page h1 em,.co-faq-layout h2 em{font-style:normal;color:#be8762}
+.co-tagline{color:#4b7456;font-size:16px;font-weight:800;letter-spacing:-.3px}
+.co-hero-desc{font-size:16px;line-height:1.95;color:#687668;max-width:500px;margin:14px 0 30px}
+.co-actions{display:flex;gap:11px;flex-wrap:wrap}
+.co-button{border:1px solid transparent;border-radius:12px;display:inline-flex;justify-content:center;align-items:center;gap:20px;padding:15px 22px;font-weight:800;font-size:13px;line-height:1.4;cursor:pointer;transition:transform .2s,background .2s}
+.co-button:hover{transform:translateY(-2px)}
+.co-primary{background:#315c43;color:white;box-shadow:0 10px 22px #315c4318}
+.co-primary:hover{background:#234c34}
+.co-plain{background:transparent;border-color:#b9c8b9;color:#315d42}
+.co-plain:hover{background:#f1f5ed}
+.co-trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:27px}
+.co-pill{display:inline-flex;background:#fffdfa;border:1px solid #ece7dc;color:#7d856e;font-size:10px;font-weight:800;padding:9px 11px;border-radius:30px}
+.co-hero-art{min-height:475px;position:relative;display:flex;justify-content:center;align-items:center}
+.co-art-paper{position:relative;width:90%;background:#fffefa;border:9px solid #fffefa;box-shadow:0 30px 65px #40543c23;border-radius:24px;transform:rotate(2.5deg);z-index:2;overflow:hidden}
+.co-art-paper>svg{width:100%;height:auto;display:block;aspect-ratio:1.6/1}
+.co-art-top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 15px;font-size:12px;font-weight:800;color:#5b7a5d}
+.co-art-top span:last-child{font-size:21px;color:#d7aa69}
+.co-art-caption{background:#fffefa;padding:17px 22px 20px;display:flex;flex-direction:column;align-items:start;gap:7px}
+.co-art-caption small{font-size:9px;font-weight:800;letter-spacing:1.4px;color:#a98566}
+.co-art-caption strong{font-size:20px;font-family:"Plus Jakarta Sans",sans-serif;color:#334d3a;font-weight:800}
+.co-art-caption span{background:#e7f2e4;color:#477455;border-radius:30px;font-size:11px;font-weight:800;padding:7px 12px}
+.co-bubble{position:absolute;background:white;padding:12px 17px;border-radius:14px;box-shadow:0 12px 30px #39553c25;max-width:205px;z-index:4;font-size:12px;font-weight:800;line-height:1.5;color:#55775e}
+.co-bubble-left{left:-24px;top:115px;transform:rotate(-7deg)}
+.co-bubble-right{right:-18px;bottom:65px;transform:rotate(5deg)}
+.co-doodle{position:absolute;font-size:76px;color:#c1d6aa;z-index:1}
+.co-doodle-1{top:-45px;right:-22px}.co-doodle-2{bottom:-33px;left:20px;color:#edcfa3}
+.co-statement{background:#f0f3e9;border-top:1px solid #e5eadb;border-bottom:1px solid #e5eadb;padding:30px 0}
+.co-statement .rc-container{display:flex;gap:22px;align-items:center;justify-content:center}
+.co-statement span{font-size:38px;color:#aaab78}
+.co-statement p{font-size:17px;line-height:1.65;color:#586c58;max-width:750px}
+.co-statement strong{color:#36573e}
+.co-section{padding:102px 0}
+.co-section.co-light{background:#f8f9f4}
+.co-section-heading{max-width:800px;margin:0 auto 38px;text-align:center}
+.co-section-heading h2,.co-faq-layout h2,.co-end h2,.co-plan-intro h1{font-family:"Plus Jakarta Sans",sans-serif;font-size:clamp(28px,3.25vw,43px);font-weight:800;line-height:1.27;letter-spacing:-1.5px;color:#314936;margin:14px 0}
+.co-section-heading>p{font-size:14px;line-height:1.85;color:#788579;max-width:630px;margin:0 auto}
+.co-principles{display:grid;grid-template-columns:repeat(3,1fr);gap:19px}
+.co-principle{border-radius:20px;padding:31px;background:#edf4e7;border:1px solid #e5e8da;min-height:242px}
+.co-principle:nth-child(2){background:#fff2e7}.co-principle:nth-child(3){background:#f0eee7}
+.co-step-header{display:flex;justify-content:space-between;align-items:start;color:#a0ab97;font-size:12px;font-weight:700}
+.co-step-symbol{font-size:33px;width:59px;height:59px;border-radius:18px;background:#ffffffc4;display:grid;place-items:center;color:#75946e}
+.co-principle h3{font-family:"Plus Jakarta Sans",sans-serif;font-size:20px;font-weight:800;color:#365841;margin:24px 0 10px}
+.co-principle p{font-size:13px;color:#647465;line-height:1.85}
+.co-how-grid{display:grid;grid-template-columns:.97fr 1.03fr;gap:100px;align-items:center}
+.co-how-story{position:relative;background:#e6ede0;border-radius:32px;padding:36px;max-width:500px}
+.co-sample-card{background:white;border:1px solid #e5e9df;border-radius:22px;box-shadow:0 18px 40px #42583d26;overflow:hidden;transform:rotate(-2deg)}
+.co-sample-image{height:235px;overflow:hidden;background:#e5ecd9}.co-sample-image svg{width:100%;height:100%;display:block}
+.co-sample-body{padding:24px}.co-sample-body h3{font-size:24px;font-weight:800;color:#35563e;font-family:"Plus Jakarta Sans",sans-serif;margin:10px 0}.co-sample-body p{font-size:13px;line-height:1.75;color:#69776a}.co-sample-body button{border:0;background:#315b43;color:white;padding:13px 18px;border-radius:12px;font-size:12px;font-weight:800;margin-top:17px;display:flex;gap:20px}
+.co-sample-floating{position:absolute;right:-30px;top:35px;background:#fffdf7;border-radius:14px;padding:12px 16px;box-shadow:0 10px 25px #374d3826;font-size:12px;color:#537b59;font-weight:800;max-width:170px;transform:rotate(7deg)}
+.co-how-copy .co-section-heading{text-align:left;margin:0 0 25px}.co-how-copy .co-section-heading p{margin:0}
+.co-how-steps{display:flex;flex-direction:column;gap:18px;margin:25px 0 33px}
+.co-how-steps>div{display:flex;gap:17px;align-items:start;padding-bottom:17px;border-bottom:1px solid #e6ebdf}
+.co-how-steps b{flex-shrink:0;display:grid;place-items:center;width:45px;height:45px;background:#eef3e7;border-radius:14px;color:#76916d;font-size:17px}
+.co-how-steps p{display:flex;flex-direction:column;gap:5px}.co-how-steps strong{font-size:14px;font-weight:800;color:#395c44}.co-how-steps small{font-size:12px;line-height:1.7;color:#758474}
+.co-benefit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.co-benefit{background:white;border-radius:17px;border:1px solid #e9ede3;padding:24px;min-height:201px}
+.co-benefit>span{font-size:31px;display:block;margin-bottom:22px}.co-benefit h3{font-size:14px;color:#34543d;font-weight:800;margin:0 0 9px}.co-benefit p{font-size:12px;line-height:1.75;color:#738273}
+.co-level-tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.co-level-tile{border:1px solid #e0e8da;border-radius:18px;min-height:266px;padding:20px;display:flex;flex-direction:column;align-items:start;text-align:left;transition:transform .2s,box-shadow .2s}
+.co-level-tile:hover{transform:translateY(-4px);box-shadow:0 12px 25px #3f513611}
+.co-level-0{background:#e9f3e5}.co-level-1{background:#fcf0e1}.co-level-2{background:#f3eaf2}.co-level-3{background:#eaf1f5}.co-level-4{background:#f8f0de}
+.co-level-number{font-size:10px;letter-spacing:1.4px;color:#7f9279;font-weight:800}
+.co-level-icon{font-size:37px;margin:20px 0 14px}.co-level-tile h3{font-size:14px;line-height:1.5;font-weight:800;color:#3d5c41}.co-level-tile p{font-size:11px;line-height:1.6;color:#7d897a;margin-top:8px}
+.co-level-count{border-top:1px solid #95ae8a33;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto;padding-top:17px;width:100%;font-size:10px;font-weight:800;color:#527057}
+.co-pricing-anchor{background:#f8faf5}
+.co-plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:900px;margin:0 auto}
+.co-plan{padding:33px;border-radius:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 15px 40px #304e2e10}
+.co-plan-free{background:white;border:1px solid #dce6d8}.co-plan-plus{background:#e9eee1;border:1px solid #d9e2d3}
+.co-plan-kicker{font-size:10px;letter-spacing:1.3px;font-weight:800;color:#77926c}
+.co-plan h3{font-family:"Plus Jakarta Sans",sans-serif;color:#35563d;font-size:26px;font-weight:800;line-height:1.3;margin:0}
+.co-plan>p{font-size:13px;line-height:1.7;color:#718172;min-height:45px}
+.co-plan-price{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;color:#2e583c;font-size:31px;padding:13px 0;border-bottom:1px solid #e2e9db}
+.co-plan-price small{font-family:"DM Sans",sans-serif;font-size:12px;color:#859688;font-weight:500}
+.co-plan-price.co-not-set{font-size:19px;color:#789078}
+.co-plan ul{list-style:none;padding:8px 0 15px;margin:0;display:flex;flex-direction:column;gap:12px;flex:1}
+.co-plan li{font-size:12px;line-height:1.6;color:#4e6b56;padding-left:26px;position:relative}
+.co-plan li:before{content:"✓";position:absolute;left:0;color:#6c9771;font-weight:900}
+.co-outline{color:#3d684c;background:transparent;border:1px solid #8fac8c}
+.co-disclaimer{font-size:10px;line-height:1.6;color:#8b977f;max-width:350px}
+.co-faq-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:85px;align-items:start}
+.co-faq-layout h2{margin:18px 0}.co-faq-layout>div:first-child>p{font-size:13px;line-height:1.85;color:#718072}
+.co-faqs{border-top:1px solid #e2e8df}
+.co-faq{border-bottom:1px solid #e2e8df}
+.co-faq button{width:100%;background:transparent;border:0;display:flex;gap:20px;justify-content:space-between;align-items:center;text-align:left;padding:19px 3px;color:#3d5943;font-size:13px;font-weight:800}
+.co-faq button b{font-size:21px;font-weight:400;color:#739078}
+.co-faq>p{font-size:12px;line-height:1.85;color:#748474;padding:0 25px 20px 3px}
+.co-end{background:#315a41;color:white;padding:75px 0;position:relative;overflow:hidden}
+.co-end-inner{text-align:center;position:relative;z-index:2}
+.co-end .co-label{color:#d7ddb4}
+.co-end h2{color:white;font-size:clamp(25px,3.7vw,45px);margin:18px 0}
+.co-end p{color:#deebdd;font-size:13px;margin:0 0 25px}
+.co-bright{background:#fff9ed;color:#315b43}
+.co-end-ornament{position:absolute;right:15px;bottom:-63px;font-size:95px;opacity:.08;pointer-events:none}
+.co-plan-page{padding:55px 0 100px}
+.co-plan-intro{text-align:center;max-width:730px;margin:30px auto 46px}
+.co-plan-intro h1{font-size:clamp(35px,4vw,52px);line-height:1.18}
+.co-plan-intro p{font-size:14px;line-height:1.85;color:#758374}
+.co-plan-page .co-plan-grid{margin-bottom:35px}
+.co-limited-notice{margin-top:24px;padding:16px;background:#f6f5e8;border-radius:12px;color:#6b745f;font-size:13px;line-height:1.7}
+.co-prelaunch-info{background:#f0f3e8;border:1px solid #e0e6d9;border-radius:20px;padding:35px;max-width:900px;margin:0 auto 34px}
+.co-prelaunch-info h2{font-family:"Plus Jakarta Sans",sans-serif;font-size:20px;color:#365842;font-weight:800;margin:0 0 12px}
+.co-prelaunch-info p{font-size:13px;line-height:1.8;color:#6b7a6e;margin-bottom:18px}
+.co-faqs-narrow{max-width:900px;margin:0 auto}
+@media (max-width:1050px){
+ .co-hero-layout{gap:45px}
+ .co-hero h1{font-size:51px;letter-spacing:-2.5px}
+ .co-how-grid{gap:50px}
+ .co-level-tiles{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:760px){
+ .co-hero{padding:45px 0 70px}.co-hero-layout{grid-template-columns:1fr;gap:40px}
+ .co-hero h1{font-size:clamp(38px,7.8vw,54px);letter-spacing:-2px}
+ .co-hero-art{min-height:405px}.co-art-paper{width:90%}.co-bubble-left{left:0}.co-bubble-right{right:0}
+ .co-statement .rc-container{gap:10px}.co-statement p{font-size:14px}
+ .co-section{padding:63px 0}
+ .co-principles,.co-how-grid,.co-faq-layout{grid-template-columns:1fr}
+ .co-principle{min-height:0}
+ .co-how-grid{gap:40px}.co-how-story{max-width:490px;width:calc(100% - 18px);margin:auto}
+ .co-benefit-grid{grid-template-columns:repeat(2,1fr)}
+ .co-level-tiles{grid-template-columns:repeat(2,1fr)}
+ .co-plan-grid{grid-template-columns:1fr}
+ .co-plan{padding:27px}
+ .co-faq-layout{gap:34px}
+}
+@media(max-width:480px){
+ .co-hero h1{font-size:38px;line-height:1.24;letter-spacing:-1.8px}
+ .co-topnote{font-size:8px;letter-spacing:.6px}
+ .co-hero-desc{font-size:14px}
+ .co-actions{display:grid;grid-template-columns:1fr 1fr}
+ .co-button{padding:13px 10px;gap:8px;font-size:11px}
+ .co-hero-art{min-height:340px}
+ .co-art-paper{width:91%}
+ .co-art-top{padding:7px 10px;font-size:10px}
+ .co-art-caption{padding:13px 15px}
+ .co-art-caption strong{font-size:16px}
+ .co-bubble{font-size:9px;max-width:135px;padding:9px 11px}
+ .co-bubble-left{top:35px}.co-bubble-right{bottom:40px}
+ .co-section-heading h2{font-size:27px}
+ .co-benefit{padding:18px;min-height:198px}
+ .co-level-tiles{gap:8px}.co-level-tile{padding:14px;min-height:242px}.co-level-icon{font-size:30px}
+ .co-plan{padding:22px}.co-plan-price{font-size:25px}
+ .co-end h2{font-size:25px}
+ .co-how-story{padding:18px}.co-sample-floating{right:-13px}
+}
