@@ -1,0 +1,17 @@
+export const DISCUSSION_EXAMPLES = {
+  "1.1": { example: "Bayangkan Ibu baru pulang dari warung membawa dua kantong belanja. Anak dapat menawarkan bantuan membawakan barang yang ringan atau membukakan pintu.", followUp: "Bagaimana perasaan Ibu setelah kamu membantunya?" },
+  "1.2": { example: "Saat istirahat, seorang teman lupa membawa bekal. Diskusikan cara berbagi sebagian makanan jika memungkinkan dan tetap meminta izin orang tua.", followUp: "Apa yang kamu rasakan ketika berbagi?" },
+  "1.3": { example: "Anak tidak sengaja menumpahkan air di meja. Daripada menyembunyikannya, ia bisa berkata jujur, meminta maaf, dan membantu mengelap meja.", followUp: "Mengapa berkata jujur lebih baik daripada menyembunyikan kesalahan?" },
+  "2.1": { example: "Kalian menanam kacang hijau bersama, tetapi besoknya belum tumbuh. Tunjukkan bahwa tanaman perlu air, waktu, dan perawatan yang sabar.", followUp: "Apa yang bisa kamu lakukan saat hasil belum terlihat?" },
+  "2.2": { example: "Mainan berserakan setelah bermain. Mintalah anak memilih langkah awal: mengumpulkan balok, menata buku, kemudian merapikan lantai.", followUp: "Bagaimana perasaanmu ketika kamar sudah rapi?" },
+  "2.3": { example: "Di rumah ada beberapa potong kue pisang. Ajak anak menawarkan satu kepada anggota keluarga yang belum mendapat bagian.", followUp: "Mengapa kita tidak harus menunggu punya banyak untuk berbagi?" },
+  "3.1": { example: "Teman kesulitan merakit mainan atau menata buku. Ajak anak bertanya 'Boleh aku bantu?' lalu menyelesaikan tugas bersama.", followUp: "Apa yang akan kamu lakukan jika temanmu masih kesulitan?" },
+  "3.2": { example: "Sepatu lama anak masih bisa dipakai, tetapi ia melihat teman memakai sepatu baru. Ajak ia membahas apa yang masih berfungsi baik dan patut disyukuri.", followUp: "Apa tiga hal yang kamu syukuri tanpa membandingkan dengan orang lain?" },
+  "3.3": { example: "Saat jalan pagi, kalian melihat bungkus makanan tergeletak. Jika aman, ajak anak memungutnya menggunakan alat yang sesuai lalu mencuci tangan.", followUp: "Apa akibatnya jika semua orang membuang sampah sembarangan?" },
+  "4.1": { example: "Anak menemukan pensil atau kotak bekal tertinggal di kelas. Diskusikan cara menyerahkannya kepada guru agar kembali kepada pemiliknya.", followUp: "Mengapa barang yang kita temukan belum tentu boleh kita miliki?" },
+  "4.2": { example: "Anak ikut lomba mewarnai dan belum menang. Ajak ia mengucapkan selamat kepada pemenang dan bercerita tentang hal yang dipelajari.", followUp: "Apa yang bisa kamu perbaiki tanpa mengejek orang lain?" },
+  "4.3": { example: "Anak ingin membeli mainan, tetapi uang saku belum cukup. Bantu ia membuat kotak tabungan dan menyisihkan sebagian secara rutin.", followUp: "Bagaimana membedakan sesuatu yang diinginkan dan dibutuhkan?" },
+  "5.1": { example: "Besok anak punya kegiatan sekolah pagi. Bersama-sama siapkan tas, botol minum, dan pakaian malam sebelumnya agar tidak tergesa-gesa.", followUp: "Apa yang mungkin terjadi kalau semuanya baru disiapkan pagi hari?" },
+  "5.2": { example: "Keluarga ingin memilih kegiatan hari libur. Setiap anggota mengusulkan ide dan mendengarkan alasan orang lain sebelum memutuskan bersama.", followUp: "Bagaimana menyampaikan pendapat tanpa menyakiti orang lain?" },
+  "5.3": { example: "Kakak dan adik bekerja sama merapikan meja makan. Jika ada kesalahan, bimbing mereka berbagi tugas, meminta maaf, dan saling memaafkan.", followUp: "Apa yang membuat kerja kelompok terasa adil dan nyaman?" }
+};
