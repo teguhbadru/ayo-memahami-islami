@@ -133,7 +133,7 @@ export function CommerceHome({onExplore,onStory,onPricing,onHow}) {
      </article>
      <article className="co-plan co-plan-plus">
       <span className="co-plan-kicker">DALAM PENGEMBANGAN</span><h3>Paket Keluarga</h3><p>Rencana fitur tambahan bagi keluarga yang ingin menggunakan Ruang Cendekia lebih rutin.</p><div className="co-plan-price co-not-set">Harga belum ditetapkan</div>
-      <ul><li>100 cerita tersedia pada versi beta gratis</li><li>Ilustrasi faceless konsisten</li><li>Fitur pendamping orang tua tambahan: dalam perencanaan</li><li>Materi printable: masih dalam perencanaan</li></ul>
+      <ul><li>Materi printable: masih dalam perencanaan</li><li>Panduan aktivitas keluarga tambahan: direncanakan</li><li>Akses keluarga lintas perangkat: direncanakan</li><li>Harga dan manfaat final belum ditetapkan</li></ul>
       <button className="co-button co-outline" onClick={onPricing}>Lihat Status Paket <Arrow/></button>
       <small className="co-disclaimer">Paket premium belum berisi penawaran akses khusus; semua 100 cerita beta saat ini gratis.</small>
      </article>
