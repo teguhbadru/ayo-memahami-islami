@@ -76,7 +76,8 @@ function App() {
     setDone(current => current.includes(activeStory.id) ? current : [...current, activeStory.id]);
   };
   const filtered = useMemo(() => LEVELS[activeLevel].stories.filter(s => (s.title+" "+s.lifeValue).toLowerCase().includes(storySearch.toLowerCase())), [activeLevel,storySearch]);
-  const practice = activeStory ? PRACTICES[activeStory.id] : null;
+  const practice = activeStory ? (PRACTICES[activeStory.id] ?? {task:activeStory.kindnessTask,tip:activeStory.parentTip}) : null;
+  const discussion = activeStory ? (DISCUSSION_EXAMPLES[activeStory.id] ?? {example:activeStory.parentExample,followUp:activeStory.parentFollowUp}) : null;
   const isComplete = activeStory && done.includes(activeStory.id);
   const currentQuestion = activeStory?.questions?.[questionIndex];
   const progress = Math.round(done.length / TOTAL * 100);
@@ -107,7 +108,7 @@ function App() {
         <div className="rc-page-heading">
           <span className="rc-kicker">KOLEKSI CERITA KITA</span>
           <h1>Pilih cerita, mulai <em>bermakna.</em></h1>
-          <p>15 cerita dalam 5 tingkatan. Pilih sesuai kesiapan anak; setiap cerita menyimpan pelajaran adab yang bisa dipraktikkan.</p>
+          <p>{TOTAL} cerita dalam 5 tingkatan, masing-masing 20 cerita. Pilih sesuai kesiapan anak; setiap cerita menyimpan pelajaran adab yang bisa dipraktikkan.</p>
         </div>
         <div className="rc-level-tabs" role="group" aria-label="Pilih tingkat pemahaman">
           {LEVELS.map((lvl,i) => <button key={lvl.level} className={activeLevel===i?"chosen":""} onClick={() => {setActiveLevel(i);setStorySearch("");}}>
@@ -115,7 +116,7 @@ function App() {
           </button>)}
         </div>
         <div className={"rc-explore-intro rc-"+LEVEL_DETAILS[activeLevel].color}>
-          <div><span>TINGKAT {activeLevel+1} • 3 CERITA</span><h2>{LEVELS[activeLevel].title.split(": ").slice(1).join(": ")}</h2><p>{LEVELS[activeLevel].desc}</p></div>
+          <div><span>TINGKAT {activeLevel+1} • {LEVELS[activeLevel].stories.length} CERITA</span><h2>{LEVELS[activeLevel].title.split(": ").slice(1).join(": ")}</h2><p>{LEVELS[activeLevel].desc}</p></div>
           <div className="rc-explore-intro-icon">{LEVEL_DETAILS[activeLevel].icon}</div>
         </div>
         <div className="rc-collection-bar">
@@ -194,7 +195,7 @@ function App() {
           <h2>Dari cerita, jadi kebaikan.</h2><p className="rc-stage-intro">Setelah anak mendengar dan memahami cerita, mari temukan pelajaran yang bisa dicoba bersama dalam kehidupan nyata.</p>
           <div className="rc-meaning-grid">
             <article className="rc-meaning-card"><span>💚 NILAI ADAB</span><h3>{activeStory.lifeValue}</h3><p>{activeStory.lifeValueDesc}</p></article>
-            <article className="rc-meaning-card rc-discussion-card"><span>💬 OBROLAN BERSAMA</span><h3>Yuk, direnungkan!</h3><p>{activeStory.reflect}</p><div className="rc-real-example"><strong>💡 Contoh untuk orang tua</strong><p>{DISCUSSION_EXAMPLES[activeStory.id]?.example}</p><small><b>Pertanyaan lanjutan:</b> {DISCUSSION_EXAMPLES[activeStory.id]?.followUp}</small></div></article>
+            <article className="rc-meaning-card rc-discussion-card"><span>💬 OBROLAN BERSAMA</span><h3>Yuk, direnungkan!</h3><p>{activeStory.reflect}</p><div className="rc-real-example"><strong>💡 Contoh untuk orang tua</strong><p>{discussion?.example}</p><small><b>Pertanyaan lanjutan:</b> {discussion?.followUp}</small></div></article>
           </div>
           <div className="rc-action-card"><span>✨ TANTANGAN KEBAIKAN HARI INI</span><h3>Satu aksi kecil, satu langkah baik.</h3><p>{practice?.task}</p><small>Aktivitas ini ajakan yang fleksibel, bukan kewajiban atau penilaian terhadap anak.</small></div>
           <div className="rc-quote"><span>✦ MUTIARA HIKMAH</span><p>{activeStory.pearl}</p></div>
@@ -223,7 +224,7 @@ function App() {
     <footer className="rc-footer"><div className="rc-container rc-footer-inner">
       <div><span className="rc-footer-brand"><BrandMark size={31}/> Ruang Cendekia</span><p>Ruang bagi orang tua dan anak untuk mendengar, memahami, dan meneladani kebaikan melalui cerita.</p></div>
       <div><strong>Jelajahi</strong><button onClick={() => explore(0)}>Koleksi Cerita</button><button onClick={() => navigate("pricing")}>Paket & Status Premium</button><button onClick={() => navigate("progress")}>Perjalanan Kita</button></div>
-      <div><strong>Ruang Cendekia</strong><p>Konten awal diadaptasi dari 15 cerita pada modul Ayo Memahami! Edisi Islami oleh Syahrul Ilmi.</p><p>Beta terbuka: 15 cerita dapat dicoba secara gratis. Paket premium belum menerima pembayaran.</p></div>
+      <div><strong>Ruang Cendekia</strong><p>Koleksi memuat 15 cerita asli dari modul Ayo Memahami! Edisi Islami oleh Syahrul Ilmi dan 85 cerita tambahan Ruang Cendekia.</p><p>Beta terbuka: 100 cerita dapat dicoba secara gratis. Paket premium belum menerima pembayaran.</p></div>
     </div><div className="rc-container rc-footer-bottom">© {new Date().getFullYear()} Ruang Cendekia · Satu cerita, satu percakapan, satu pelajaran kebaikan.</div></footer>
   </div>;
 }
