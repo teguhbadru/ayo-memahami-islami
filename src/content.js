@@ -1,3 +1,9 @@
+import {extraLevel1} from "./newStories1";
+import {extraLevel2} from "./newStories2";
+import {extraLevel3} from "./newStories3";
+import {extraLevel4} from "./newStories4";
+import {extraLevel5} from "./newStories5";
+
 export const LEVELS = [
   {
     level: 1,
@@ -324,3 +330,11 @@ export const LEVELS = [
     ]
   }
 ];
+
+// Append 17 newly written, level-aligned stories to each original set of three.
+// The fifteen original stories above are not changed.
+[extraLevel1,extraLevel2,extraLevel3,extraLevel4,extraLevel5].forEach((extras,i)=>{
+  if (extras.length!==17 || LEVELS[i].stories.length!==3) throw new Error("Unexpected story count at level "+(i+1));
+  LEVELS[i].stories.push(...extras);
+});
+if(LEVELS.some(level=>level.stories.length!==20)) throw new Error("Every level must contain 20 stories");
