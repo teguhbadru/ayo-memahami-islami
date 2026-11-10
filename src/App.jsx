@@ -340,41 +340,29 @@ function AyoMemahamiAppInner() {
   const [currentView, setCurrentView] = useState("home"); // home, levels, story, monitor, certificate
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedStory, setSelectedStory] = useState(null);
-  const [userScores, setUserScores] = useState({}); // { "1.1": 5, "1.2": 4, ... }
   const [parentMode, setParentMode] = useState(false);
-  const [answersState, setAnswersState] = useState({});
-  const [checkedState, setCheckedState] = useState({});
-  const [showFeedback, setShowFeedback] = useState({});
+  const [oralQuestionIndex, setOralQuestionIndex] = useState(0);
+  const [showOralAnswer, setShowOralAnswer] = useState(false);
+  const [completedStories, setCompletedStories] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("ayo_memahami_completed_v1") || "null");
+      const validIds = new Set(LEVELS.flatMap(level => level.stories.map(story => story.id)));
+      if (Array.isArray(saved)) return [...new Set(saved.filter(id => validIds.has(id)))];
+      // Pertahankan tanda selesai untuk pengguna yang sebelumnya sudah mengerjakan kuis.
+      const previous = JSON.parse(localStorage.getItem("ayo_memahami_scores") || "{}");
+      return Object.keys(previous || {}).filter(id => validIds.has(id));
+    } catch {
+      return [];
+    }
+  });
 
-  // Load local guest progress or cloud progress for the signed-in student.
   useEffect(() => {
-    if (user && profile?.role === 'student' && supabase) {
-      supabase.from('student_progress').select('story_id,score').eq('student_id', user.id)
-        .then(({ data, error }) => {
-          if (error) console.error('Gagal memuat progres cloud:', error.message);
-          else if (data) setUserScores(Object.fromEntries(data.map(row => [row.story_id, row.score])));
-        });
-      return;
+    try {
+      localStorage.setItem("ayo_memahami_completed_v1", JSON.stringify(completedStories));
+    } catch (error) {
+      console.error("Tidak dapat menyimpan progres kegiatan:", error);
     }
-    if (!user) {
-      const saved = localStorage.getItem("ayo_memahami_scores");
-      if (saved) { try { setUserScores(JSON.parse(saved)); } catch (e) { console.error(e); } }
-    }
-  }, [user?.id, profile?.role, supabase]);
-
-  const saveScore = async (storyId, score) => {
-    const updated = { ...userScores, [storyId]: score };
-    setUserScores(updated);
-    if (user && profile?.role === 'student' && supabase) {
-      const { error } = await supabase.from('student_progress').upsert(
-        { student_id: user.id, story_id: storyId, score, completed_at: new Date().toISOString() },
-        { onConflict: 'student_id,story_id' }
-      );
-      if (error) setShowFeedback(prev => ({...prev, [storyId]: 'Nilai belum tersinkron. Periksa koneksi lalu coba lagi.'}));
-    } else {
-      localStorage.setItem("ayo_memahami_scores", JSON.stringify(updated));
-    }
-  };
+  }, [completedStories]);
 
   const loadLinkedStudents = async () => {
     if (!supabase || !user) return;
@@ -403,37 +391,29 @@ function AyoMemahamiAppInner() {
     setLinkBusy(false);
   };
 
-  const handleAnswerChange = (storyId, qIdx, val) => {
-    setAnswersState(prev => ({
-      ...prev,
-      [`${storyId}_${qIdx}`]: val
-    }));
+  const openStory = (level, story) => {
+    setSelectedLevel(level);
+    setSelectedStory(story);
+    setOralQuestionIndex(0);
+    setShowOralAnswer(false);
+    setCurrentView("story");
   };
 
-  const handleCheckQuiz = (story) => {
-    let correctCount = 0;
-    story.questions.forEach((q, idx) => {
-      const userAns = answersState[`${story.id}_${idx}`];
-      if (userAns && userAns.trim().toLowerCase() === q.answer.trim().toLowerCase()) {
-        correctCount++;
-      } else if (q.type === 'mc' && userAns === q.answer) {
-        correctCount++;
-      } else if (q.type === 'tf' && userAns === q.answer) {
-        correctCount++;
-      } else if (q.type === 'essay' && userAns && userAns.length > 2) {
-        // give credit for sensible essay answers
-        correctCount++;
-      }
-    });
-    const finalScore = Math.min(5, Math.max(1, Math.round((correctCount / story.questions.length) * 5)));
-    saveScore(story.id, finalScore);
-    setCheckedState(prev => ({ ...prev, [story.id]: true }));
-    setShowFeedback(prev => ({ ...prev, [story.id]: `Luar biasa! Skor latihan kamu: ${finalScore} / 5` }));
+  const changeOralQuestion = (index) => {
+    setOralQuestionIndex(index);
+    setShowOralAnswer(false);
   };
 
-  const totalCompletedStories = Object.keys(userScores).length;
+  const markStoryComplete = () => {
+    if (!selectedStory) return;
+    setCompletedStories(previous => previous.includes(selectedStory.id)
+      ? previous
+      : [...previous, selectedStory.id]);
+  };
 
-  // Akses belajar dibuka tanpa wajib login; akun tetap opsional untuk fitur sinkronisasi.
+  const totalCompletedStories = completedStories.length;
+
+  // Semua cerita bisa dibaca tanpa akun. Orang tua membimbing pertanyaan secara lisan.
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 text-slate-800 font-sans selection:bg-red-500 selection:text-white pb-16">
@@ -447,7 +427,7 @@ function AyoMemahamiAppInner() {
             </div>
             <div>
               <h1 className="text-lg md:text-xl font-bold tracking-tight">Ayo Memahami! Edisi Islami</h1>
-              <p className="text-xs text-red-200">Modul Membaca Bertahap Usia 6-9 Tahun</p>
+              <p className="text-xs text-red-200">Aktivitas menyimak dan memahami cerita bersama anak</p>
             </div>
           </div>
 
@@ -468,7 +448,7 @@ function AyoMemahamiAppInner() {
               onClick={() => setCurrentView("monitor")}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${currentView === 'monitor' ? 'bg-white/20 text-white font-bold' : 'hover:bg-white/10'}`}
             >
-              📊 Pemantauan
+              📚 Cerita Selesai
             </button>
             <button
               onClick={() => setCurrentView("certificate")}
@@ -525,26 +505,31 @@ function AyoMemahamiAppInner() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-55 -z-0 pointer-events-none"></div>
               <div className="relative z-10 max-w-2xl">
                 <span className="inline-block bg-red-100 text-[#B70912] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
-                  🌟 Belajar Memahami Bacaan Bertahap
+                  💛 WAKTU BERKUALITAS BERSAMA ANAK
                 </span>
                 <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
-                  Membaca Bukan Sekadar Bisa, Tapi <span className="text-[#B70912]">Memahami & Merenungkan!</span>
+                  Cerita Sederhana, <span className="text-[#B70912]">Percakapan Bermakna.</span>
                 </h2>
                 <p className="text-slate-600 text-base md:text-lg mb-6 leading-relaxed">
-                  Selamat datang di aplikasi interaktif <strong className="text-slate-800">Ayo Memahami! Edisi Islami</strong>. Disusun oleh Syahrul Ilmi untuk anak usia 6-9 tahun. Dilengkapi cerita Islami pilihan, kotak kata baru, latihan kuis, mutiara hikmah, dan lembar pemantauan.
+                  <strong className="text-slate-800">Ayo Memahami! Edisi Islami</strong> adalah teman bagi orang tua untuk meluangkan waktu bersama anak usia 6–9 tahun. Bacakan cerita Islami, ajukan pertanyaan, lalu dengarkan jawaban anak secara lisan. Anak bisa berlatih menyimak dan memahami cerita tanpa perlu menatap layar atau mengetik.
                 </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-900">📖 15 Cerita Islami</span>
+                  <span className="rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-800">✨ 5 Tingkatan</span>
+                  <span className="rounded-full bg-red-50 border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-800">💛 Tanpa Login</span>
+                </div>
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => setCurrentView("levels")}
                     className="bg-[#B70912] hover:bg-red-700 text-white font-bold px-6 py-3.5 rounded-2xl shadow-lg shadow-red-500/30 transition transform hover:-translate-y-0.5 flex items-center space-x-2"
                   >
-                    <span>🚀 Mulai Belajar Sekarang</span>
+                    <span>💛 Mulai Cerita Bersama</span>
                   </button>
                   <button
                     onClick={() => setCurrentView("monitor")}
                     className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-6 py-3.5 rounded-2xl transition flex items-center space-x-2 border border-slate-200"
                   >
-                    <span>📈 Lihat Kemajuan ({totalCompletedStories}/15 Cerita)</span>
+                    <span>📖 Cerita Selesai ({totalCompletedStories}/15)</span>
                   </button>
                 </div>
               </div>
@@ -555,9 +540,9 @@ function AyoMemahamiAppInner() {
               <div className="flex items-start gap-3 mb-5">
                 <span className="text-3xl" aria-hidden="true">💛</span>
                 <div>
-                  <h3 className="font-bold text-xl mb-1">Panduan Singkat untuk Orang Tua</h3>
+                  <h3 className="font-bold text-xl mb-1">Cara Menggunakan Bersama Anak</h3>
                   <p className="text-sm text-amber-900 leading-relaxed">
-                    Luangkan waktu untuk membaca dan berbincang bersama anak. Tidak perlu login, mengetik jawaban, atau mengejar nilai.
+                    Cukup luangkan beberapa menit untuk bercerita dan mengobrol. Orang tua memegang HP, anak cukup mendengarkan dan menjawab secara lisan.
                   </p>
                 </div>
               </div>
@@ -578,7 +563,7 @@ function AyoMemahamiAppInner() {
                     <h4 className="font-bold text-sm">Bacakan dan tanyakan</h4>
                   </div>
                   <p className="text-sm text-amber-900 leading-relaxed">
-                    Bacakan cerita dengan santai, lalu ajukan pertanyaan satu per satu secara lisan.
+                    Bacakan cerita dengan tenang. Setelah itu bacakan pertanyaan satu per satu dan beri anak waktu untuk berpikir.
                   </p>
                 </div>
                 <div className="bg-white/75 border border-amber-200 rounded-2xl p-4">
@@ -587,14 +572,14 @@ function AyoMemahamiAppInner() {
                     <h4 className="font-bold text-sm">Dengarkan dan diskusikan</h4>
                   </div>
                   <p className="text-sm text-amber-900 leading-relaxed">
-                    Anak menjawab dengan kata-katanya sendiri. Ajak ia membahas hikmah cerita bersama.
+                    Dengarkan jawaban anak tanpa terburu-buru membenarkan. Setelahnya, bicarakan nilai kebaikan dan hikmah dari cerita.
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <p className="text-xs text-amber-900 leading-relaxed">
-                  💡 <strong>Tips:</strong> Beri anak waktu berpikir. Gunakan Mode Ortu bila ingin melihat panduan jawaban.
+                  💡 <strong>Tips:</strong> Anak tidak harus menjawab sempurna. Aktifkan Mode Ortu untuk melihat panduan jawaban saat mendampingi.
                 </p>
                 {parentMode ? (
                   <span className="text-xs font-bold text-emerald-800 bg-white/75 border border-emerald-200 rounded-xl px-4 py-2 shrink-0">
@@ -622,7 +607,7 @@ function AyoMemahamiAppInner() {
                 >
                   &larr; Kembali ke Beranda
                 </button>
-                <h2 className="text-3xl font-extrabold text-slate-900">Pilih Tingkatan & Cerita</h2>
+                <h2 className="text-3xl font-extrabold text-slate-900">Pilih Cerita untuk Dibacakan</h2>
               </div>
             </div>
 
@@ -641,16 +626,16 @@ function AyoMemahamiAppInner() {
 
                   <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                     {lvl.stories.map((story) => {
-                      const isDone = userScores[story.id] !== undefined;
+                      const isDone = completedStories.includes(story.id);
                       return (
                         <div
                           key={story.id}
-                          onClick={() => { setSelectedLevel(lvl); setSelectedStory(story); setCurrentView("story"); }}
+                          onClick={() => openStory(lvl, story)}
                           className="bg-slate-50 hover:bg-red-50/50 rounded-2xl p-5 border border-slate-200 hover:border-red-300 transition cursor-pointer flex flex-col justify-between group relative"
                         >
                           {isDone && (
                             <span className="absolute top-4 right-4 bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full">
-                              Skor: {userScores[story.id]}/5 ⭐
+                              ✓ Sudah dibaca
                             </span>
                           )}
                           <div>
@@ -660,7 +645,7 @@ function AyoMemahamiAppInner() {
                           </div>
                           <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between text-xs font-bold text-[#B70912]">
                             <span>Nilai: {story.lifeValue}</span>
-                            <span>Baca Cerita &rarr;</span>
+                            <span>Mulai Baca Bersama &rarr;</span>
                           </div>
                         </div>
                       );
@@ -688,10 +673,14 @@ function AyoMemahamiAppInner() {
               </span>
             </div>
 
+            <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 leading-relaxed">
+              <strong>💛 Untuk orang tua:</strong> Bacakan cerita di bawah ini. Anak cukup mendengarkan.
+              Setelah selesai, ajukan pertanyaan satu per satu dan ajak anak mengobrol tentang hikmahnya.
+            </div>
             {/* Story Card */}
             <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10 border border-red-100 space-y-6">
               <div className="border-b border-slate-100 pb-4">
-                <span className="text-xs font-bold text-slate-400">Cerita {selectedStory.id}</span>
+                <span className="text-xs font-bold text-slate-400">📖 Langkah 1 · Bacakan cerita {selectedStory.id}</span>
                 <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1">{selectedStory.title}</h2>
               </div>
 
@@ -714,6 +703,84 @@ function AyoMemahamiAppInner() {
                 </div>
               )}
 
+              {/* Tahap tanya jawab secara lisan, satu soal per layar */}
+              <section className="pt-6 border-t border-slate-200 space-y-4" aria-label="Pertanyaan untuk dibacakan orang tua">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-[#B70912] mb-1">💬 Langkah 2 · Ajak anak menjawab</p>
+                    <h3 className="text-xl font-extrabold text-slate-900">Tanyakan Secara Lisan</h3>
+                  </div>
+                  <span className="rounded-full bg-red-50 text-[#B70912] px-3 py-1.5 text-xs font-bold">
+                    Pertanyaan {oralQuestionIndex + 1} dari {selectedStory.questions.length}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600">
+                  Bacakan pertanyaan ini, lalu beri anak waktu menjawab dengan kata-katanya sendiri.
+                  Tidak perlu mengetik jawaban atau mengejar nilai.
+                </p>
+                <div className="h-2 rounded-full bg-red-100 overflow-hidden" aria-hidden="true">
+                  <div className="h-full bg-[#B70912] rounded-full transition-all duration-300"
+                    style={{width: ((oralQuestionIndex + 1) / selectedStory.questions.length * 100) + '%'}} />
+                </div>
+
+                <div className="bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-200 p-5 md:p-7 space-y-4">
+                  <p className="text-xs font-bold tracking-wide uppercase text-amber-900">Bacakan pertanyaan berikut</p>
+                  <p className="text-xl md:text-2xl font-bold text-slate-900 leading-relaxed">
+                    {selectedStory.questions[oralQuestionIndex]?.q}
+                  </p>
+                  {selectedStory.questions[oralQuestionIndex]?.type === 'mc' && (
+                    <div className="rounded-xl bg-white border border-amber-100 p-4 space-y-2">
+                      <p className="text-xs font-bold text-slate-600">Bacakan juga pilihan jawabannya:</p>
+                      {selectedStory.questions[oralQuestionIndex].options.map((option, index) => (
+                        <p key={index} className="text-sm text-slate-700">{option}</p>
+                      ))}
+                    </div>
+                  )}
+                  {selectedStory.questions[oralQuestionIndex]?.type === 'tf' && (
+                    <p className="text-sm text-amber-900 font-medium">Tanyakan: “Menurutmu, benar atau salah?”</p>
+                  )}
+
+                  {(parentMode || showOralAnswer) ? (
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 space-y-2" role="note">
+                      <p className="text-xs font-bold uppercase tracking-wide text-emerald-800">🔑 Panduan jawaban untuk orang tua</p>
+                      <p className="font-semibold text-emerald-950">
+                        {selectedStory.questions[oralQuestionIndex]?.answer}
+                      </p>
+                      <p className="text-xs text-emerald-900">Gunakan sebagai panduan diskusi, bukan untuk menuntut anak menjawab persis sama.</p>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => setShowOralAnswer(true)}
+                      className="w-full sm:w-auto text-sm font-bold text-[#B70912] bg-white border border-red-200 hover:bg-red-50 rounded-xl px-4 py-2.5 transition">
+                      👁️ Lihat panduan jawaban
+                    </button>
+                  )}
+                  {!parentMode && showOralAnswer && (
+                    <button type="button" onClick={() => setShowOralAnswer(false)}
+                      className="text-xs text-slate-500 hover:text-[#B70912] underline">
+                      Sembunyikan jawaban
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between gap-3">
+                  <button type="button" disabled={oralQuestionIndex === 0}
+                    onClick={() => changeOralQuestion(oralQuestionIndex - 1)}
+                    className="px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold bg-white text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition">
+                    ← Sebelumnya
+                  </button>
+                  <button type="button" disabled={oralQuestionIndex === selectedStory.questions.length - 1}
+                    onClick={() => changeOralQuestion(oralQuestionIndex + 1)}
+                    className="px-4 py-3 rounded-xl text-sm font-bold bg-[#B70912] text-white disabled:bg-slate-200 disabled:text-slate-500 disabled:cursor-not-allowed hover:bg-red-800 transition">
+                    Pertanyaan Berikutnya →
+                  </button>
+                </div>
+              </section>
+
+              {/* Refleksi setelah orang tua selesai mengajukan pertanyaan */}
+              <div className="pt-6 border-t border-slate-200">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#B70912] mb-2">💛 Langkah 3 · Diskusikan hikmah bersama</p>
+                <p className="text-sm text-slate-600 mb-4">Ajak anak menghubungkan pesan cerita dengan pengalaman sehari-hari.</p>
+              </div>
               {/* Life Value & Reflection */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-red-50 p-5 rounded-2xl border border-red-100">
@@ -732,172 +799,88 @@ function AyoMemahamiAppInner() {
                 <p className="text-sm md:text-base font-medium italic mt-2 text-slate-100">{selectedStory.pearl}</p>
               </div>
 
-              {/* QUIZ SECTION ("Ayo Jawab!") */}
-              <div className="pt-6 border-t border-slate-200 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-slate-900">✍️ Ayo Jawab!</h3>
-                  {userScores[selectedStory.id] !== undefined && (
-                    <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">
-                      Tersimpan: {userScores[selectedStory.id]}/5 ⭐
-                    </span>
-                  )}
+
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h4 className="font-bold text-emerald-900">Selesai membaca dan berdiskusi?</h4>
+                  <p className="text-sm text-emerald-800 mt-1">
+                    Tandai aktivitas ini sudah dilakukan bersama. Tidak ada nilai atau jawaban yang perlu dikirim.
+                  </p>
                 </div>
-
-                <div className="space-y-6">
-                  {selectedStory.questions.map((q, qIdx) => (
-                    <div key={qIdx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
-                      <p className="font-semibold text-slate-800 text-sm md:text-base">
-                        {qIdx + 1}. {q.q}
-                      </p>
-
-                      {/* Multiple Choice */}
-                      {q.type === 'mc' && (
-                        <div className="space-y-2">
-                          {q.options.map((opt, oIdx) => {
-                            const isSelected = answersState[`${selectedStory.id}_${qIdx}`] === opt[0];
-                            return (
-                              <button
-                                key={oIdx}
-                                onClick={() => handleAnswerChange(selectedStory.id, qIdx, opt[0])}
-                                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition border ${isSelected ? 'bg-red-500 text-white border-red-600 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'}`}
-                              >
-                                {opt}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* True / False */}
-                      {q.type === 'tf' && (
-                        <div className="flex space-x-3">
-                          {['Benar', 'Salah'].map((tfVal) => {
-                            const isSelected = answersState[`${selectedStory.id}_${qIdx}`] === tfVal;
-                            return (
-                              <button
-                                key={tfVal}
-                                onClick={() => handleAnswerChange(selectedStory.id, qIdx, tfVal)}
-                                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition border ${isSelected ? 'bg-[#B70912] text-white border-red-700 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'}`}
-                              >
-                                {tfVal}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Essay */}
-                      {q.type === 'essay' && (
-                        <input
-                          type="text"
-                          placeholder="Tulis jawabanmu di sini..."
-                          value={answersState[`${selectedStory.id}_${qIdx}`] || ''}
-                          onChange={(e) => handleAnswerChange(selectedStory.id, qIdx, e.target.value)}
-                          className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-                        />
-                      )}
-
-                      {/* Parent / Teacher Answer Key Preview */}
-                      {parentMode && (
-                        <div className="mt-2 p-3 bg-amber-100 rounded-xl text-xs text-amber-900 border border-amber-300">
-                          <strong>🔑 Kunci Jawaban Ortu:</strong> {q.answer}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Submit Quiz Button */}
-                <div className="pt-4 flex flex-col items-center space-y-3">
-                  <button
-                    onClick={() => handleCheckQuiz(selectedStory)}
-                    className="w-full bg-[#B70912] hover:bg-red-700 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-red-500/30 transition transform hover:-translate-y-0.5 text-center"
-                  >
-                    Periksa Jawaban & Simpan Nilai 🎯
+                {completedStories.includes(selectedStory.id) ? (
+                  <span className="shrink-0 rounded-xl bg-white border border-emerald-200 text-emerald-800 font-bold text-sm px-4 py-3">✓ Sudah selesai bersama</span>
+                ) : (
+                  <button type="button" onClick={markStoryComplete}
+                    className="shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm px-5 py-3 transition">
+                    ✓ Tandai Cerita Selesai
                   </button>
-
-                  {showFeedback[selectedStory.id] && (
-                    <div className="w-full p-4 bg-emerald-50 text-emerald-800 rounded-2xl font-bold text-center border border-emerald-200 animate-bounce">
-                      {showFeedback[selectedStory.id]}
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* VIEW 4: LEMBAR PEMANTAUAN (MONITORING) */}
+        {/* VIEW 4: CATATAN KEGIATAN MEMBACA BERSAMA */}
         {currentView === "monitor" && (
           <div className="space-y-6 animate-fadeIn max-w-4xl mx-auto">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <button
-                  onClick={() => setCurrentView("home")}
-                  className="text-sm text-slate-500 hover:text-[#B70912] font-medium mb-1 inline-flex items-center"
-                >
-                  &larr; Kembali ke Beranda
-                </button>
-                <h2 className="text-3xl font-extrabold text-slate-900">📈 Lembar Pemantauan Kemajuan</h2>
+                <button onClick={() => setCurrentView("home")}
+                  className="text-sm text-slate-500 hover:text-[#B70912] font-medium mb-2">← Kembali ke Beranda</button>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">📚 Catatan Cerita Bersama</h2>
+                <p className="text-sm text-slate-600 mt-2">
+                  Catatan sederhana cerita yang sudah dibacakan dan didiskusikan bersama anak.
+                  Progres tersimpan di browser perangkat ini, tanpa akun.
+                </p>
               </div>
-              <button
-                onClick={() => {
-                  if (confirm("Reset seluruh skor kemajuan?")) {
-                    setUserScores({});
-                    localStorage.removeItem("ayo_memahami_scores");
-                  }
-                }}
-                className="text-xs text-red-600 hover:underline font-semibold"
-              >
-                Reset Data
+              <button onClick={() => {
+                if (confirm("Hapus semua tanda cerita yang sudah selesai di perangkat ini?")) {
+                  setCompletedStories([]);
+                  localStorage.removeItem("ayo_memahami_scores");
+                }
+              }} className="text-sm text-red-700 border border-red-200 bg-white hover:bg-red-50 rounded-xl px-4 py-2 font-semibold shrink-0">
+                Reset Catatan
               </button>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+            <div className="bg-white rounded-3xl border border-red-100 shadow-sm overflow-hidden">
+              <div className="p-5 md:p-6 bg-amber-50 border-b border-amber-100 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-lg">Catatan Skor Per Cerita (Target /5)</h3>
-                  <p className="text-xs text-slate-500">Selesaikan ke-15 cerita untuk membuka sertifikat Pemikir Cerdas!</p>
+                  <h3 className="font-bold text-slate-900 text-lg">Perjalanan Bercerita Bersama</h3>
+                  <p className="text-sm text-slate-600">Tidak ada skor. Yang penting waktu bersama dan percakapan yang terjadi.</p>
                 </div>
-                <div className="bg-red-100 text-[#B70912] px-4 py-2 rounded-2xl font-bold text-sm">
-                  Total Selesai: {totalCompletedStories} / 15
+                <div className="bg-[#B70912] text-white px-4 py-2 rounded-2xl font-bold text-sm">
+                  {totalCompletedStories} dari 15 cerita
                 </div>
               </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
-                      <th className="p-4">No</th>
-                      <th className="p-4">Judul Cerita</th>
-                      <th className="p-4">Tingkat</th>
-                      <th className="p-4 text-center">Skor (Maks 5)</th>
-                      <th className="p-4 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-sm">
-                    {LEVELS.flatMap(lvl => lvl.stories).map((story, idx) => {
-                      const score = userScores[story.id];
-                      return (
-                        <tr key={story.id} className="hover:bg-slate-50 transition">
-                          <td className="p-4 font-bold text-slate-400">{idx + 1}</td>
-                          <td className="p-4 font-bold text-slate-800">{story.id} - {story.title}</td>
-                          <td className="p-4 text-slate-500 text-xs">{story.category.split(':')[0]}</td>
-                          <td className="p-4 text-center font-bold text-[#B70912]">
-                            {score !== undefined ? `${score} ⭐` : "-"}
-                          </td>
-                          <td className="p-4 text-center">
-                            {score !== undefined ? (
-                              <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">Selesai</span>
-                            ) : (
-                              <span className="bg-slate-100 text-slate-500 text-xs font-medium px-2.5 py-1 rounded-full">Belum</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              <div className="h-2 bg-red-100">
+                <div className="h-full bg-[#B70912] transition-all duration-300"
+                  style={{width: (totalCompletedStories / 15 * 100) + '%'}} />
+              </div>
+              <div className="divide-y divide-slate-100">
+                {LEVELS.flatMap(level => level.stories.map(story => ({level, story}))).map(({level, story}) => {
+                  const done = completedStories.includes(story.id);
+                  return (
+                    <div key={story.id} className="p-4 md:px-6 flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="text-xs text-slate-500">Tingkat {level.level} · Cerita {story.id}</p>
+                        <h4 className="font-bold text-slate-900">{story.title}</h4>
+                        <p className="text-xs text-slate-500">Nilai kehidupan: {story.lifeValue}</p>
+                      </div>
+                      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
+                        <span className={done
+                          ? "bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full"
+                          : "bg-slate-100 text-slate-500 text-xs font-medium px-2.5 py-1 rounded-full"}>
+                          {done ? "✓ Selesai" : "Belum"}
+                        </span>
+                        <button type="button" onClick={() => openStory(level, story)}
+                          className="rounded-lg border border-red-200 px-3 py-2 text-xs text-[#B70912] font-bold hover:bg-red-50">
+                          Buka Cerita →
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -967,8 +950,8 @@ function AyoMemahamiAppInner() {
 
       {/* FOOTER */}
       <footer className="max-w-5xl mx-auto px-4 mt-16 pt-6 border-t border-slate-200 text-center text-xs text-slate-500 space-y-1">
-        <p>Ayo Memahami! Modul Latihan Memahami Bacaan Bertahap Edisi Islami oleh Syahrul Ilmi.</p>
-        <p>Dirancang khusus untuk anak usia 6-9 tahun (Kelas 1-3 SD).</p>
+        <p>Ayo Memahami! Edisi Islami — Teman bercerita dan berdiskusi bersama anak. Disusun oleh Syahrul Ilmi.</p>
+        <p>Untuk pendampingan anak usia 6–9 tahun. Baca bersama, dengarkan, dan renungkan.</p>
       </footer>
     </div>
   );
