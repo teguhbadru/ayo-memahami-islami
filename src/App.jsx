@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { LEVELS } from "./content";
 import { BrandMark, StoryArt } from "./Visuals";
+import { CommerceHome, PlansView } from "./Commerce";
 import { DISCUSSION_EXAMPLES } from "./discussion";
 
 const TOTAL = LEVELS.reduce((sum, level) => sum + level.stories.length, 0);
@@ -89,7 +90,8 @@ function App() {
         </button>
         <nav className="rc-links" aria-label="Navigasi utama">
           <button className={view==="home"?"active":""} onClick={() => navigate("home")}>Beranda</button>
-          <button className={view==="explore"?"active":""} onClick={() => explore(activeLevel)}>Jelajah Cerita</button>
+          <button className={view==="explore"?"active":""} onClick={() => explore(activeLevel)}>Cerita Gratis</button>
+          <button className={view==="pricing"?"active":""} onClick={() => navigate("pricing")}>Paket Keluarga</button>
           <button className={view==="progress"?"active":""} onClick={() => navigate("progress")}>Perjalanan Kita</button>
         </nav>
         <button className="rc-nav-cta" onClick={() => explore(0)}>Mulai Cerita <span aria-hidden="true">↗</span></button>
@@ -97,132 +99,9 @@ function App() {
     </header>
 
     <main>
-      {view === "home" && <>
-        <section className="rc-hero">
-          <div className="rc-container rc-hero-grid">
-            <div className="rc-hero-copy">
-              <span className="rc-eyebrow">✦ AKTIVITAS CERITA & ADAB UNTUK KELUARGA</span>
-              <h1>Ruang kecil untuk <em>cerita</em> dan <em>makna</em> yang besar.</h1>
-              <p>Tempat orang tua dan anak menemukan makna bersama melalui cerita Islami, pertanyaan sederhana, dan praktik kebaikan sehari-hari.</p>
-              <div className="rc-hero-buttons">
-                <button className="rc-btn rc-btn-primary" onClick={() => explore(0)}>Mulai Bercerita <span>↗</span></button>
-                <button className="rc-btn rc-btn-secondary" onClick={() => document.getElementById("cara-kerja")?.scrollIntoView({behavior:"smooth"})}>Lihat Cara Kerja <span>↓</span></button>
-              </div>
-              <div className="rc-hero-chips">
-                <span>📖 {TOTAL} cerita orisinal</span>
-                <span>🌱 5 tingkat pemahaman</span>
-                <span>💛 Tanpa wajib login</span>
-              </div>
-            </div>
-            <div className="rc-hero-visual" role="img" aria-label="Ilustrasi suasana hangat orang tua membacakan cerita dan anak mendengarkan">
-              <div className="rc-orbit rc-orbit-a">✧</div>
-              <div className="rc-orbit rc-orbit-b">✦</div>
-              <div className="rc-orbit rc-orbit-c">☾</div>
-              <div className="rc-scene-top"><span>Ruang cerita keluarga</span><span>✦ 10 menit bermakna</span></div>
-              <div className="rc-scene-art">
-                <div className="rc-scene-caption">“Nah, kalau kamu jadi Zaid, apa yang akan kamu lakukan?”</div>
-                <div className="rc-scene-people rc-scene-faceless"><StoryArt storyId="1.1" title="Bantuan untuk Nenek"/></div>
-                <div className="rc-scene-sofa"></div>
-              </div>
-              <div className="rc-scene-footer"><span>💬 Dengar ceritanya</span><span>🌿 Temukan hikmahnya</span></div>
-              <div className="rc-floating-card">💚 <span>Adab hari ini<br/><strong>Suka menolong</strong></span></div>
-            </div>
-          </div>
-        </section>
+      {view === "home" && <CommerceHome onExplore={explore} onStory={openStory} onPricing={()=>navigate("pricing")}/>}
 
-        <section className="rc-section rc-principles">
-          <div className="rc-container">
-            <div className="rc-section-heading center">
-              <span className="rc-kicker">FILOSOFI BELAJAR KITA</span>
-              <h2>Mendengar. Memahami. <em>Meneladani.</em></h2>
-              <p>Satu cerita, satu percakapan, satu pelajaran kebaikan.</p>
-            </div>
-            <div className="rc-three-grid">
-              {[
-                ["👂", "01", "Mendengar", "Orang tua membacakan cerita. Anak menyimak tanpa harus menatap layar.", "mint"],
-                ["💬", "02", "Memahami", "Pertanyaan bertahap mengajak anak mengingat, bernalar, dan mengungkapkan pendapat.", "peach"],
-                ["🤲", "03", "Meneladani", "Nilai adab menjadi obrolan dan aksi kebaikan kecil dalam keseharian.", "lavender"]
-              ].map(([icon,num,title,desc,color]) => <article className={"rc-principle rc-"+color} key={title}>
-                <div className="rc-principle-top"><span>{icon}</span><small>{num} / 03</small></div>
-                <h3>{title}</h3><p>{desc}</p>
-              </article>)}
-            </div>
-          </div>
-        </section>
-
-        <section className="rc-section rc-how" id="cara-kerja">
-          <div className="rc-container">
-            <div className="rc-how-layout">
-              <div className="rc-section-heading"><span className="rc-kicker">GAMPANG UNTUK DIMULAI</span>
-                <h2>Cukup 3 langkah untuk <em>waktu berkualitas.</em></h2>
-                <p>Orang tua memegang perangkat. Anak cukup mendengarkan, berpikir, dan berbicara.</p>
-                <button className="rc-text-link" onClick={() => explore(0)}>Coba cerita pertama <span>↗</span></button>
-              </div>
-              <div className="rc-step-list">
-                {[
-                  ["01","Pilih cerita","Mulai dari tingkat yang sesuai dengan kemampuan anak."],
-                  ["02","Bacakan & tanyakan","Bacakan cerita, lalu pertanyaan satu per satu secara lisan."],
-                  ["03","Temukan hikmahnya","Bicarakan nilai adab dan lakukan satu aksi kebaikan bersama."]
-                ].map(([num,title,desc]) => <div className="rc-step" key={num}>
-                  <span className="rc-step-number">{num}</span><div><h3>{title}</h3><p>{desc}</p></div><span className="rc-step-deco">✳</span>
-                </div>)}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="rc-section">
-          <div className="rc-container">
-            <div className="rc-section-heading center">
-              <span className="rc-kicker">BELAJAR BERTAHAP</span>
-              <h2>5 tingkat, <em>banyak makna.</em></h2>
-              <p>Setiap tingkat melatih kemampuan memahami cerita yang berbeda. Tidak perlu terburu-buru naik tingkat.</p>
-            </div>
-            <div className="rc-level-grid">
-              {LEVEL_DETAILS.map((detail,i) => <button key={i} className={"rc-level-card rc-"+detail.color} onClick={() => explore(i)}>
-                <span className="rc-level-icon">{detail.icon}</span><span className="rc-level-label">TINGKAT {i+1}</span>
-                <strong>{detail.short}</strong><small>{detail.sub}</small>
-                <span className="rc-level-bottom">{LEVELS[i].stories.length} cerita <b>↗</b></span>
-              </button>)}
-            </div>
-          </div>
-        </section>
-
-        <section className="rc-section rc-feature-section">
-          <div className="rc-container rc-feature-grid">
-            <div className="rc-feature-panel">
-              <span className="rc-mini-label">CONTOH DARI KOLEKSI KITA</span>
-              <div className="rc-feature-illustration rc-feature-faceless"><StoryArt storyId="1.1" title="Bantuan untuk Nenek"/></div>
-              <div className="rc-feature-card"><span>TINGKAT 1 · MENEMUKAN FAKTA</span>
-                <h3>Bantuan untuk Nenek</h3><p>Sebuah cerita sederhana tentang Zaid yang membantu Nenek Fatimah membawa belanjaan.</p>
-                <div className="rc-tag">💚 Adab: Tolong-menolong</div>
-              </div>
-            </div>
-            <div className="rc-feature-copy">
-              <span className="rc-kicker">BUKAN HANYA BACA CERITA</span>
-              <h2>Cerita yang hidup dalam <em>percakapan.</em></h2>
-              <p>Di setiap aktivitas, orang tua mendapatkan panduan untuk bertanya, mendengarkan, dan mengajak anak mencoba satu kebaikan kecil.</p>
-              <div className="rc-feature-points">
-                <div><span>✓</span><p><strong>Pertanyaan lisan bertahap</strong><small>Tanpa kuis yang harus diketik anak.</small></p></div>
-                <div><span>✓</span><p><strong>Panduan untuk orang tua</strong><small>Jawaban dan tips diskusi yang mudah digunakan.</small></p></div>
-                <div><span>✓</span><p><strong>Nilai adab & aksi kebaikan</strong><small>Supaya hikmah cerita bisa dicoba di kehidupan nyata.</small></p></div>
-              </div>
-              <button className="rc-btn rc-btn-primary" onClick={() => openStory(LEVELS[0].stories[0])}>Lihat Contoh Cerita <span>↗</span></button>
-            </div>
-          </div>
-        </section>
-
-        <section className="rc-section">
-          <div className="rc-container rc-cta">
-            <div><span className="rc-kicker">MULAI DARI SATU CERITA</span>
-              <h2>Waktu sederhana, <em>kenangan bermakna.</em></h2>
-              <p>Tak perlu persiapan rumit. Pilih cerita, temani anak, dan nikmati percakapannya.</p>
-              <button className="rc-btn rc-btn-light" onClick={() => explore(0)}>Mulai Bersama Anak <span>↗</span></button>
-            </div>
-            <div className="rc-cta-art" aria-hidden="true"><span>☾</span><span>📚</span><span>✨</span></div>
-          </div>
-        </section>
-      </>}
+      {view === "pricing" && <PlansView onExplore={explore} onHome={()=>navigate("home")}/>}
 
       {view === "explore" && <section className="rc-container rc-inner-page">
         <div className="rc-page-heading">
@@ -343,8 +222,8 @@ function App() {
     </main>
     <footer className="rc-footer"><div className="rc-container rc-footer-inner">
       <div><span className="rc-footer-brand"><BrandMark size={31}/> Ruang Cendekia</span><p>Ruang bagi orang tua dan anak untuk mendengar, memahami, dan meneladani kebaikan melalui cerita.</p></div>
-      <div><strong>Jelajahi</strong><button onClick={() => explore(0)}>Koleksi Cerita</button><button onClick={() => navigate("progress")}>Perjalanan Kita</button></div>
-      <div><strong>Ruang Cendekia</strong><p>Konten awal diadaptasi dari 15 cerita pada modul Ayo Memahami! Edisi Islami oleh Syahrul Ilmi.</p><p>Versi awal untuk pengembangan dan uji coba keluarga.</p></div>
+      <div><strong>Jelajahi</strong><button onClick={() => explore(0)}>Koleksi Cerita</button><button onClick={() => navigate("pricing")}>Paket & Status Premium</button><button onClick={() => navigate("progress")}>Perjalanan Kita</button></div>
+      <div><strong>Ruang Cendekia</strong><p>Konten awal diadaptasi dari 15 cerita pada modul Ayo Memahami! Edisi Islami oleh Syahrul Ilmi.</p><p>Beta terbuka: 15 cerita dapat dicoba secara gratis. Paket premium belum menerima pembayaran.</p></div>
     </div><div className="rc-container rc-footer-bottom">© {new Date().getFullYear()} Ruang Cendekia · Satu cerita, satu percakapan, satu pelajaran kebaikan.</div></footer>
   </div>;
 }
