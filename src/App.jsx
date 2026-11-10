@@ -550,54 +550,62 @@ function AyoMemahamiAppInner() {
               </div>
             </div>
 
-            {/* Quick 5 Levels Overview */}
-            <div>
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-slate-900">✨ Tangga 5 Tingkat Pemahaman</h3>
-                <button onClick={() => setCurrentView("levels")} className="text-sm font-semibold text-[#B70912] hover:underline">
-                  Lihat Semua Cerita &rarr;
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                {LEVELS.map((lvl) => (
-                  <div
-                    key={lvl.level}
-                    onClick={() => { setSelectedLevel(lvl); setCurrentView("levels"); }}
-                    className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition cursor-pointer border border-slate-100 flex flex-col justify-between group"
-                  >
-                    <div>
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${lvl.color} text-white font-bold flex items-center justify-center text-lg mb-3 shadow-md group-hover:scale-105 transition`}>
-                        {lvl.level}
-                      </div>
-                      <h4 className="font-bold text-slate-800 text-base mb-1">{lvl.title}</h4>
-                      <p className="text-xs text-slate-500 line-clamp-3">{lvl.desc}</p>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-[#B70912]">
-                      <span>{lvl.stories.length} Cerita</span>
-                      <span>&rarr;</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tips for Parents Banner */}
-            <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-3xl p-6 md:p-8 border border-amber-200 text-amber-900">
-              <div className="flex items-start space-x-4">
-                <div className="text-3xl">💡</div>
+            {/* Panduan membaca bersama anak, tanpa harus mengisi kuis */}
+            <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-3xl p-6 md:p-8 border border-amber-200 text-amber-950">
+              <div className="flex items-start gap-3 mb-5">
+                <span className="text-3xl" aria-hidden="true">💛</span>
                 <div>
-                  <h4 className="font-bold text-lg mb-1">Panduan Singkat untuk Orang Tua & Guru</h4>
-                  <p className="text-sm text-amber-800 leading-relaxed mb-3">
-                    Gunakan pola 3 sesi per cerita: Sesi 1 (Baca & kenali), Sesi 2 (Jawab mandiri), dan Sesi 3 (Bahas Mutiara Hikmah). Jangan lupa biasakan anak mencari bukti di teks dengan pertanyaan <span className="italic">"Dari mana kamu tahu?"</span>.
+                  <h3 className="font-bold text-xl mb-1">Panduan Singkat untuk Orang Tua</h3>
+                  <p className="text-sm text-amber-900 leading-relaxed">
+                    Luangkan waktu untuk membaca dan berbincang bersama anak. Tidak perlu login, mengetik jawaban, atau mengejar nilai.
                   </p>
-                  <button
-                    onClick={() => setParentMode(true)}
-                    className="bg-amber-800 text-amber-100 hover:bg-amber-900 text-xs font-bold px-4 py-2 rounded-xl transition"
-                  >
-                    Aktifkan Mode Ortu untuk Kunci Jawaban
-                  </button>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-white/75 border border-amber-200 rounded-2xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs font-bold flex items-center justify-center">1</span>
+                    <h4 className="font-bold text-sm">Pilih cerita</h4>
+                  </div>
+                  <p className="text-sm text-amber-900 leading-relaxed">
+                    Buka menu <strong>5 Tingkat</strong> dan pilih cerita sesuai kemampuan anak.
+                  </p>
+                </div>
+                <div className="bg-white/75 border border-amber-200 rounded-2xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs font-bold flex items-center justify-center">2</span>
+                    <h4 className="font-bold text-sm">Bacakan dan tanyakan</h4>
+                  </div>
+                  <p className="text-sm text-amber-900 leading-relaxed">
+                    Bacakan cerita dengan santai, lalu ajukan pertanyaan satu per satu secara lisan.
+                  </p>
+                </div>
+                <div className="bg-white/75 border border-amber-200 rounded-2xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-7 h-7 rounded-full bg-amber-800 text-white text-xs font-bold flex items-center justify-center">3</span>
+                    <h4 className="font-bold text-sm">Dengarkan dan diskusikan</h4>
+                  </div>
+                  <p className="text-sm text-amber-900 leading-relaxed">
+                    Anak menjawab dengan kata-katanya sendiri. Ajak ia membahas hikmah cerita bersama.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-xs text-amber-900 leading-relaxed">
+                  💡 <strong>Tips:</strong> Beri anak waktu berpikir. Gunakan Mode Ortu bila ingin melihat panduan jawaban.
+                </p>
+                {parentMode ? (
+                  <span className="text-xs font-bold text-emerald-800 bg-white/75 border border-emerald-200 rounded-xl px-4 py-2 shrink-0">
+                    ✓ Mode Ortu aktif
+                  </span>
+                ) : (
+                  <button onClick={() => setParentMode(true)}
+                    className="bg-amber-800 text-white hover:bg-amber-900 text-xs font-bold px-4 py-2.5 rounded-xl transition shrink-0">
+                    Aktifkan Mode Ortu
+                  </button>
+                )}
               </div>
             </div>
           </div>
