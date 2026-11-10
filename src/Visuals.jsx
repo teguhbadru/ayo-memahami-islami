@@ -168,9 +168,45 @@ function SceneObjects({kind}) {
   }
 }
 
+/** Decorative original cover for new stories until each has a commissioned
+ * scene illustration. Avoids wrongly reusing "Bantuan untuk Nenek" for all.
+ */
+function NewStoryCover({storyId,title,className=""}) {
+  const level=Math.max(1,Math.min(5,Number(storyId?.split(".")[0])||1));
+  const number=Number(storyId?.split(".")[1])||4;
+  const palettes=[
+    ["#F6E8CD","#A3C5A0","#548C64","#DFB177"],
+    ["#FCEAD6","#B7CDB0","#7A9C73","#DF986E"],
+    ["#F4E4E9","#B8C8B3","#748E9A","#C58F90"],
+    ["#E6EFF0","#B8D5C4","#668A80","#D3AF76"],
+    ["#FAEFCF","#B9CE96","#687F67","#BB8C67"],
+  ];
+  const [bg,hill,ink,gold]=palettes[level-1];
+  const icons=["✦","✿","❋","☀","♡","✳","☾","✧","❀","⌘"];
+  const symbol=icons[(number*3+level)%icons.length];
+  return <svg className={className} viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label={"Sampul dekoratif cerita "+(title||storyId)}>
+    <rect width="640" height="400" fill={bg}/>
+    <circle cx={490-number%5*18} cy="86" r="61" fill="#fff8e7" opacity=".78"/>
+    <g opacity=".36" fill={hill}><circle cx="53" cy="310" r="112"/><circle cx="150" cy="335" r="103"/><circle cx="553" cy="319" r="123"/></g>
+    <path d="M0 338 Q143 264 310 337 Q470 246 640 322 V400 H0Z" fill={hill}/>
+    <path d="M0 367 Q191 304 352 358 Q482 302 640 352 V400H0Z" fill={ink} opacity=".18"/>
+    <g transform={`translate(${number%5*11-25},${number%4*5-10})`}>
+      <path d="M203 179 Q254 156 309 181 L309 306 Q250 278 203 298Z" fill="#fffcf3" stroke={ink} strokeWidth="7"/>
+      <path d="M309 181 Q365 155 417 177 V298 Q358 277 309 306Z" fill="#fffbf0" stroke={ink} strokeWidth="7"/>
+      <path d="M309 181 V306" stroke={ink} strokeWidth="5" />
+      <path d="M222 204 L276 195 M222 228 L276 216 M338 195 L395 201 M338 218 L395 224" stroke={gold} strokeWidth="7" strokeLinecap="round" opacity=".68"/>
+      <path d="M309 172 C282 144 294 108 317 92 C347 113 343 146 309 172Z" fill={ink} opacity=".7"/>
+    </g>
+    <text x={120+number%5*38} y={126-number%3*9} fontSize="53" fill={gold} opacity=".95" textAnchor="middle">{symbol}</text>
+    <circle cx="441" cy="165" r="8" fill={gold} opacity=".75"/>
+    <circle cx="459" cy="185" r="5" fill={ink} opacity=".5"/>
+  </svg>;
+}
+
 /** Purpose-built faceless art for all 15 original stories. No stock art or external image requests. */
 export function StoryArt({storyId, title, className=""}) {
-  const meta = ART_META[storyId] || ART_META["1.1"];
+  if (!ART_META[storyId]) return <NewStoryCover storyId={storyId} title={title} className={className}/>;
+  const meta = ART_META[storyId];
   const indoor = ["tidy","honest","bake","shoes","draw","save","prepare","team"].includes(meta.kind);
   return <svg className={className} viewBox="0 0 640 400" role="img" aria-label={title ? "Ilustrasi tanpa wajah untuk "+title+": "+meta.label : meta.label} preserveAspectRatio="xMidYMid slice">
     <defs>

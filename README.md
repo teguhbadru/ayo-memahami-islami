@@ -9,9 +9,9 @@ Ruang Cendekia adalah prototipe aplikasi aktivitas cerita dan adab Islami untuk 
 ## Fondasi komersial — fase beta
 
 - Landing page benefit-first untuk orang tua, dengan cerita contoh, cara kerja, 5 tingkatan, nilai produk, dan FAQ.
-- Navigasi ke katalog 15 cerita gratis, catatan perjalanan, dan halaman status Paket Keluarga.
+- Navigasi ke katalog 100 cerita beta gratis, catatan perjalanan, dan halaman status Paket Keluarga.
 - Paket Keluarga **belum dijual**. Tidak ada harga palsu, checkout palsu, rekening pembayaran, atau akses premium yang diklaim aktif.
-- Jumlah **100 cerita** merupakan target pengembangan (20 per tingkat), **bukan** konten yang telah tersedia.
+- **100 cerita kini tersedia**: 20 cerita di setiap tingkat, terdiri dari 15 cerita lama yang dipertahankan dan 85 cerita baru.
 - Logo favicon diperbarui dari lambang hijau–emas Ruang Cendekia.
 - `supabase/commerce-schema.sql` adalah rancangan tabel paket, pesanan, dan hak akses **belum dieksekusi**, untuk dipasang di proyek Supabase **khusus Ruang Cendekia**, bukan database Bisaprint.
 
@@ -23,16 +23,22 @@ Ruang Cendekia adalah prototipe aplikasi aktivitas cerita dan adab Islami untuk 
 4. Hubungkan gateway pembayaran resmi di server; verifikasi webhook dan pastikan akses premium diberikan **hanya** setelah pembayaran terverifikasi.
 5. Simpan konten premium pada layanan berproteksi; jangan menyertakan teks cerita premium dalam bundel JavaScript publik.
 6. Uji alur pemesanan, pembayaran, akses, refund, dan keamanan sebelum mengaktifkan penjualan.
-7. Ganti ilustrasi SVG sementara untuk seluruh cerita dengan karya faceless berkualitas setara ilustrasi buku cerita. Tiga contoh artwork awal masih membutuhkan proses publikasi sebagai aset aplikasi.
+7. Tinjau serta ganti sampul dekoratif 85 cerita baru dengan ilustrasi faceless khusus yang sesuai setiap cerita. Ilustrasi painterly dari diskusi sebelumnya belum dipasang sebagai aset.
+
+## Koleksi 100 cerita
+
+Setiap tingkat memuat 20 cerita. Tingkat 1 berfokus pada menemukan fakta, Tingkat 2 ide pokok/urutan/kosakata, Tingkat 3 sebab-akibat dan perasaan, Tingkat 4 kesimpulan dan prediksi, serta Tingkat 5 penilaian/ringkasan/penerapan. Setiap cerita baru memiliki teks, empat pertanyaan lisan dengan panduan jawaban, nilai adab, refleksi, contoh situasi orang tua, pertanyaan lanjutan, dan tugas kebaikan.
+
+Konten baru perlu melalui peninjauan editorial, kesesuaian usia, dan materi Islami sebelum dipasarkan sebagai paket berbayar. Progres lokal masih di browser.
 
 ## Versi awal
 
 - Desain kartu cerita dengan ilustrasi vektor faceless khusus untuk semua 15 cerita; ikon logo didigitalkan dalam format SVG mengikuti bentuk lingkaran hijau dan lengkungan emas dari referensi pengguna.
-- 15 contoh obrolan nyata untuk orang tua beserta pertanyaan lanjutan di tahap Meneladani.
+- 100 contoh obrolan situasional dan pertanyaan lanjutan bagi orang tua di tahap Meneladani.
 - Tampilan cerita, pertanyaan, dan refleksi bergaya kartu serta lebih konsisten pada perangkat seluler.
 
 
-- 5 tingkat pemahaman, 15 cerita asli dari modul *Ayo Memahami! Edisi Islami* oleh Syahrul Ilmi, tanpa mengubah teks maupun urutannya.
+- 5 tingkat pemahaman, 15 cerita asli dari modul *Ayo Memahami! Edisi Islami* oleh Syahrul Ilmi tanpa mengubah teks maupun urutannya, serta 85 cerita baru dengan empat pertanyaan setiap cerita.
 - Beranda baru, katalog cerita, dan halaman aktivitas mobile-friendly.
 - Alur **Mendengar → Memahami → Meneladani**: cerita, pertanyaan satu per satu, panduan jawaban, refleksi, nilai adab, dan tantangan kebaikan.
 - Tidak perlu membuat akun atau mengisi kuis. Progres cerita disimpan secara lokal melalui `localStorage` dengan kunci `ruang_cendikia_progress_v1`, termasuk migrasi progres lokal dari aplikasi lama.
