@@ -215,7 +215,7 @@ function App() {
           <div className="rc-progress-circle" style={{"--pct":progress+"%"}}><span>{progress}%</span></div>
         </div>
         <div className="rc-progress-list">{LEVELS.map((level,i) => <div className="rc-progress-group" key={i}>
-          <div className="rc-progress-level"><span>{LEVEL_DETAILS[i].icon}</span><div><strong>Tingkat {i+1}</strong><small>{LEVEL_DETAILS[i].short}</small></div><b>{level.stories.filter(x=>done.includes(x.id)).length} / 3</b></div>
+          <div className="rc-progress-level"><span>{LEVEL_DETAILS[i].icon}</span><div><strong>Tingkat {i+1}</strong><small>{LEVEL_DETAILS[i].short}</small></div><b>{level.stories.filter(x=>done.includes(x.id)).length} / {level.stories.length}</b></div>
           {level.stories.map(story=><button key={story.id} onClick={()=>openStory(story)} className="rc-progress-row"><span className={done.includes(story.id)?"rc-status done":"rc-status"}>{done.includes(story.id)?"✓":"○"}</span><span>{story.title}</span><small>{done.includes(story.id)?"Sudah selesai":"Belum dibaca"}</small><b>↗</b></button>)}
         </div>)}</div>
         <div className="rc-reset-area"><p>Ingin mulai lagi dari awal?</p><button onClick={()=>{if(window.confirm("Hapus semua tanda cerita selesai di perangkat ini?"))setDone([])}}>Hapus catatan di perangkat</button></div>
