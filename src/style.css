@@ -301,3 +301,47 @@ button:focus-visible,input:focus-visible{outline:3px solid #c99d6b;outline-offse
  .rc-reading-card{box-shadow:none;border:0;padding:0}
  .rc-story-page{width:100%;max-width:none}
 }
+
+/* Ruang Cendekia — visual identity and illustrated story cards */
+.rc-brand{gap:11px;letter-spacing:-.7px}.rc-brand>span:last-child>span{color:#bd814d}
+.rc-logo-mark{flex-shrink:0;filter:drop-shadow(0 2px 3px #8ba26b22)}
+.rc-scene-faceless{display:block;position:absolute;inset:35px 0 24px;z-index:3;width:100%;height:auto;padding:0 3%}
+.rc-scene-faceless svg{width:100%;height:100%;border-radius:21px;object-fit:cover;box-shadow:0 13px 30px #5a724a20}
+.rc-scene-people.rc-scene-faceless{padding-top:0}
+.rc-scene-caption{max-width:205px;margin:20px 0 -4px 9px;font-size:11px}
+.rc-scene-sofa{display:none}
+.rc-feature-faceless{width:100%;height:225px;min-height:225px;margin:0;display:block}
+.rc-feature-faceless svg{width:100%;height:100%;border-radius:20px;box-shadow:0 10px 24px #445f3c22}
+.rc-story-thumb{height:203px;min-height:203px;padding:0;overflow:hidden}
+.rc-story-art{display:block;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .25s ease}
+.rc-story-card:hover .rc-story-art{transform:scale(1.045)}
+.rc-card-number{position:absolute;top:14px;left:14px;z-index:4;box-shadow:0 2px 10px #31452c22}
+.rc-complete-stamp{z-index:4}
+.rc-reading-illustration{width:100%;height:min(45vw,355px);min-height:220px;border-radius:20px;overflow:hidden;margin-bottom:25px;box-shadow:0 8px 22px #465c4315}
+.rc-reading-illustration svg{width:100%;height:100%;display:block}
+.rc-question-illustration{max-width:560px;width:100%;height:215px;border-radius:17px;overflow:hidden;margin:0 auto 22px}
+.rc-question-illustration svg{width:100%;height:100%;display:block}
+.rc-real-example{background:#fff7e9;border:1px solid #eddec5;border-radius:15px;padding:18px;margin-top:20px}
+.rc-real-example strong{font-size:12px;color:#806044}
+.rc-real-example p{margin:10px 0;font-size:13px;line-height:1.85;color:#705941}
+.rc-real-example small{display:block;padding-top:10px;border-top:1px solid #e7d7bd;font-size:12px;color:#806c58;line-height:1.7}
+.rc-discussion-card{background:#fffaf0}
+.rc-meaning-grid{align-items:stretch}
+.rc-footer-brand{display:inline-flex;align-items:center;gap:9px}
+@media(max-width:760px){
+ .rc-scene-faceless{inset:25px 0 20px}
+ .rc-scene-faceless svg{border-radius:16px}
+ .rc-reading-illustration{height:260px}
+ .rc-meaning-grid{grid-template-columns:1fr}
+ .rc-question-illustration{height:190px}
+}
+@media(max-width:480px){
+ .rc-brand{font-size:15px;gap:5px;letter-spacing:-.7px}
+ .rc-logo-mark{width:32px;height:32px}
+ .rc-scene-faceless{inset:18px 0 14px}
+ .rc-scene-caption{display:none}
+ .rc-reading-illustration{height:190px;min-height:180px}
+ .rc-story-thumb{height:200px}
+ .rc-question-illustration{height:145px}
+ .rc-real-example{padding:14px}
+}
