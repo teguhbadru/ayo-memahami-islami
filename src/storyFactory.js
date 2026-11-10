@@ -12,7 +12,7 @@ export function buildLevel(level, category, entries) {
     return {
       id: level + "." + (i + 4),
       title, category, text, lifeValue, lifeValueDesc,
-      reflect: followUp,
+      reflect: "Bagaimana kamu bisa mempraktikkan nilai " + lifeValue.toLowerCase() + " di rumah atau sekolah?",
       pearl: "Hikmah: " + lifeValueDesc,
       questions: pairs.map(([q, answer]) => ({ q, type: "essay", answer })),
       newWords: vocabulary ? [{term:vocabulary[0], def:vocabulary[1]}] : [],
