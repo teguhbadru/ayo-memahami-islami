@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { LEVELS } from "./content";
+import { BrandMark, StoryArt } from "./Visuals";
+import { DISCUSSION_EXAMPLES } from "./discussion";
 
 const TOTAL = LEVELS.reduce((sum, level) => sum + level.stories.length, 0);
 const ALL = LEVELS.flatMap(level => level.stories.map(story => ({...story, levelNum: level.level, levelName: level.title.split(": ").slice(1).join(": ")})));
@@ -81,9 +83,9 @@ function App() {
   return <div className="rc-app">
     <header className="rc-header">
       <div className="rc-container rc-nav">
-        <button type="button" className="rc-brand" onClick={() => navigate("home")} aria-label="Ruang Cendikia, ke beranda">
-          <span className="rc-brand-mark">✺</span>
-          <span>ruang<span>cendikia.</span></span>
+        <button type="button" className="rc-brand" onClick={() => navigate("home")} aria-label="Ruang Cendekia, ke beranda">
+          <BrandMark size={40} className="rc-logo-mark"/>
+          <span>Ruang <span>Cendekia</span></span>
         </button>
         <nav className="rc-links" aria-label="Navigasi utama">
           <button className={view==="home"?"active":""} onClick={() => navigate("home")}>Beranda</button>
@@ -119,7 +121,7 @@ function App() {
               <div className="rc-scene-top"><span>Ruang cerita keluarga</span><span>✦ 10 menit bermakna</span></div>
               <div className="rc-scene-art">
                 <div className="rc-scene-caption">“Nah, kalau kamu jadi Zaid, apa yang akan kamu lakukan?”</div>
-                <div className="rc-scene-people" aria-hidden="true"><span>👩🏻‍🦰</span><span>📖</span><span>🧒🏻</span></div>
+                <div className="rc-scene-people rc-scene-faceless"><StoryArt storyId="1.1" title="Bantuan untuk Nenek"/></div>
                 <div className="rc-scene-sofa"></div>
               </div>
               <div className="rc-scene-footer"><span>💬 Dengar ceritanya</span><span>🌿 Temukan hikmahnya</span></div>
@@ -190,7 +192,7 @@ function App() {
           <div className="rc-container rc-feature-grid">
             <div className="rc-feature-panel">
               <span className="rc-mini-label">CONTOH DARI KOLEKSI KITA</span>
-              <div className="rc-feature-illustration"><span>👦🏻</span><span>🛍️</span><span>👵🏻</span></div>
+              <div className="rc-feature-illustration rc-feature-faceless"><StoryArt storyId="1.1" title="Bantuan untuk Nenek"/></div>
               <div className="rc-feature-card"><span>TINGKAT 1 · MENEMUKAN FAKTA</span>
                 <h3>Bantuan untuk Nenek</h3><p>Sebuah cerita sederhana tentang Zaid yang membantu Nenek Fatimah membawa belanjaan.</p>
                 <div className="rc-tag">💚 Adab: Tolong-menolong</div>
@@ -244,7 +246,7 @@ function App() {
         <div className="rc-story-grid">
           {filtered.map((story,index) => <article className="rc-story-card" key={story.id}>
             <div className={"rc-story-thumb rc-"+LEVEL_DETAILS[activeLevel].color}>
-              <span className="rc-card-number">CERITA {story.id}</span><span className="rc-thumb-emoji">{["📖","🌼","🌿"][index%3]}</span>
+              <span className="rc-card-number">CERITA {story.id}</span><StoryArt storyId={story.id} title={story.title} className="rc-story-art"/>
               {done.includes(story.id) && <span className="rc-complete-stamp">✓ Sudah selesai</span>}
             </div>
             <div className="rc-story-content">
@@ -264,13 +266,14 @@ function App() {
           <div><span className="rc-eyebrow">TINGKAT {activeStory.id.split(".")[0]} · CERITA {activeStory.id}</span>
             <h1>{activeStory.title}</h1>
             <p>💚 Nilai adab: <strong>{activeStory.lifeValue}</strong></p></div>
-          <span className="rc-story-heading-icon">📖</span>
+          <span className="rc-story-heading-icon">✦</span>
         </div>
         <div className="rc-stage-tabs" role="tablist" aria-label="Tahapan kegiatan">
           {["1 · Mendengar","2 · Memahami","3 · Meneladani"].map((label,i) => <button key={label} role="tab" aria-selected={stage===i} className={stage===i?"selected":""} onClick={() => nextStage(i)}>{label}</button>)}
         </div>
 
         {stage===0 && <div className="rc-reading-card">
+          <div className="rc-reading-illustration"><StoryArt storyId={activeStory.id} title={activeStory.title}/></div>
           <div className="rc-read-head"><span>📖 BACAKAN UNTUK ANAK</span><span>Langkah 1 dari 3</span></div>
           <h2>Yuk, dengarkan ceritanya!</h2>
           <p className="rc-stage-intro">Orang tua membacakan cerita dengan tenang. Anak cukup mendengarkan tanpa perlu memegang atau melihat HP.</p>
@@ -288,6 +291,7 @@ function App() {
           <p className="rc-stage-intro">Bacakan satu pertanyaan, lalu tunggu jawaban anak. Pertanyaan dan pilihan jawaban hanya untuk dibacakan, bukan diisi di layar.</p>
           <div className="rc-question-track"><div style={{width: ((questionIndex+1)/activeStory.questions.length*100)+"%"}}/></div>
           <div className="rc-question-box">
+            <div className="rc-question-illustration"><StoryArt storyId={activeStory.id} title={activeStory.title}/></div>
             <div className="rc-question-meta"><span>PERTANYAAN {questionIndex+1} / {activeStory.questions.length}</span><span>👂 Dengarkan jawabannya</span></div>
             <h3>{currentQuestion?.q}</h3>
             {currentQuestion?.type==="mc" && <div className="rc-options"><p>Jika perlu, bacakan pilihan berikut:</p>{currentQuestion.options?.map((opt,i)=><div key={i}>{opt}</div>)}</div>}
@@ -311,7 +315,7 @@ function App() {
           <h2>Dari cerita, jadi kebaikan.</h2><p className="rc-stage-intro">Setelah anak mendengar dan memahami cerita, mari temukan pelajaran yang bisa dicoba bersama dalam kehidupan nyata.</p>
           <div className="rc-meaning-grid">
             <article className="rc-meaning-card"><span>💚 NILAI ADAB</span><h3>{activeStory.lifeValue}</h3><p>{activeStory.lifeValueDesc}</p></article>
-            <article className="rc-meaning-card"><span>💬 OBROLAN BERSAMA</span><h3>Yuk, direnungkan!</h3><p>{activeStory.reflect}</p></article>
+            <article className="rc-meaning-card rc-discussion-card"><span>💬 OBROLAN BERSAMA</span><h3>Yuk, direnungkan!</h3><p>{activeStory.reflect}</p><div className="rc-real-example"><strong>💡 Contoh untuk orang tua</strong><p>{DISCUSSION_EXAMPLES[activeStory.id]?.example}</p><small><b>Pertanyaan lanjutan:</b> {DISCUSSION_EXAMPLES[activeStory.id]?.followUp}</small></div></article>
           </div>
           <div className="rc-action-card"><span>✨ TANTANGAN KEBAIKAN HARI INI</span><h3>Satu aksi kecil, satu langkah baik.</h3><p>{practice?.task}</p><small>Aktivitas ini ajakan yang fleksibel, bukan kewajiban atau penilaian terhadap anak.</small></div>
           <div className="rc-quote"><span>✦ MUTIARA HIKMAH</span><p>{activeStory.pearl}</p></div>
@@ -338,10 +342,10 @@ function App() {
       </section>}
     </main>
     <footer className="rc-footer"><div className="rc-container rc-footer-inner">
-      <div><span className="rc-footer-brand">✺ ruangcendikia.</span><p>Ruang bagi orang tua dan anak untuk mendengar, memahami, dan meneladani kebaikan melalui cerita.</p></div>
+      <div><span className="rc-footer-brand"><BrandMark size={31}/> Ruang Cendekia</span><p>Ruang bagi orang tua dan anak untuk mendengar, memahami, dan meneladani kebaikan melalui cerita.</p></div>
       <div><strong>Jelajahi</strong><button onClick={() => explore(0)}>Koleksi Cerita</button><button onClick={() => navigate("progress")}>Perjalanan Kita</button></div>
-      <div><strong>Ruang Cendikia</strong><p>Konten awal diadaptasi dari 15 cerita pada modul Ayo Memahami! Edisi Islami oleh Syahrul Ilmi.</p><p>Versi awal untuk pengembangan dan uji coba keluarga.</p></div>
-    </div><div className="rc-container rc-footer-bottom">© {new Date().getFullYear()} Ruang Cendikia · Satu cerita, satu percakapan, satu pelajaran kebaikan.</div></footer>
+      <div><strong>Ruang Cendekia</strong><p>Konten awal diadaptasi dari 15 cerita pada modul Ayo Memahami! Edisi Islami oleh Syahrul Ilmi.</p><p>Versi awal untuk pengembangan dan uji coba keluarga.</p></div>
+    </div><div className="rc-container rc-footer-bottom">© {new Date().getFullYear()} Ruang Cendekia · Satu cerita, satu percakapan, satu pelajaran kebaikan.</div></footer>
   </div>;
 }
 
