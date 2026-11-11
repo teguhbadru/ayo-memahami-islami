@@ -59,6 +59,7 @@ function App() {
   const [showParentNotes, setShowParentNotes] = useState(false);
   const [done, setDone] = useState(getSaved);
   const [storySearch, setStorySearch] = useState("");
+  const [oralNotes, setOralNotes] = useState({});
 
   useEffect(() => {
     try { localStorage.setItem("ruang_cendikia_progress_v1", JSON.stringify(done)); } catch {}
@@ -68,7 +69,7 @@ function App() {
   const explore = level => { setActiveLevel(level); navigate("explore"); };
   const openStory = story => {
     setActiveStory(story); setStage(0); setQuestionIndex(0); setShowAnswer(false);
-    setShowVocabulary(false); setShowParentNotes(false); navigate("story");
+    setShowVocabulary(false); setShowParentNotes(false); setOralNotes({}); navigate("story");
   };
   const nextStage = next => { setStage(next); setShowAnswer(false); window.scrollTo({top:0,behavior:"smooth"}); };
   const changeQuestion = next => { setQuestionIndex(next); setShowAnswer(false); };
@@ -180,11 +181,18 @@ function App() {
                 </li>)}
               </ol>
             </div>
-            <aside className="ref-question-sidebar">
-              <span className="ref-side-emoji" aria-hidden="true">💬</span>
-              <h3>Obrolan, bukan ujian.</h3>
-              <p>Berikan waktu anak berpikir. Dengarkan pendapatnya dengan tenang.</p>
-              <div className="ref-side-tip"><strong>Tips Aba & Umma</strong><span>Jawaban boleh memakai kata-kata sendiri.</span></div>
+            <aside className="ref-question-sidebar ref-oral-sidebar">
+              <h3>CATATAN ORANG TUA</h3>
+              <p>Setelah anak menjawab lisan, tandai responsnya. Ini bukan nilai ujian.</p>
+              <div className="ref-oral-legend"><span>✓ Paham</span><span>↻ Bantu lagi</span></div>
+              <div className="ref-oral-rows">
+                {activeStory.questions.map((q,i)=><div className="ref-oral-row" key={i}>
+                  <span aria-label={"Pertanyaan "+(i+1)}>{i+1}</span>
+                  <button className={oralNotes[i]==="paham"?"chosen understood":""} aria-pressed={oralNotes[i]==="paham"} aria-label={"Anak memahami pertanyaan "+(i+1)} onClick={()=>setOralNotes(v=>({...v,[i]:v[i]==="paham"?null:"paham"}))}>✓</button>
+                  <button className={oralNotes[i]==="bantu"?"chosen revisit":""} aria-pressed={oralNotes[i]==="bantu"} aria-label={"Perlu membantu lagi pada pertanyaan "+(i+1)} onClick={()=>setOralNotes(v=>({...v,[i]:v[i]==="bantu"?null:"bantu"}))}>↻</button>
+                </div>)}
+              </div>
+              <div className="ref-side-tip"><strong>💬 Tips Aba & Umma</strong><span>Berikan jeda dan apresiasi usaha anak. Catatan ini hanya untuk sesi saat ini.</span></div>
             </aside>
           </div>
           <div className="ref-answer-panel">
