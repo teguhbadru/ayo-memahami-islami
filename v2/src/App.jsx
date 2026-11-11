@@ -3,7 +3,6 @@ import {LEVELS} from "./data/content";
 import {DISCUSSION_EXAMPLES} from "./data/discussion";
 import {SceneArt,BrandIcon,ILLUSTRATED_STORIES} from "./Art";
 import "./styles.css";
-import "./reference-composite.css";
 
 const ALL=LEVELS.flatMap(level=>level.stories);
 const STAGES=[{slug:"mendengar",label:"Mendengar"},{slug:"memahami",label:"Memahami"},{slug:"meneladani",label:"Meneladani"}];
@@ -42,26 +41,20 @@ function StepTabs({id,stage}){return <nav className="step-tabs" aria-label="Taha
 function Header({page}){return <header className="site-header"><div className="top-ribbon"/><div className="site-nav"><button className="logo-button" onClick={()=>linkTo("")} aria-label="Ke beranda Ruang Cendekia"><Logo small/></button><nav aria-label="Navigasi utama"><button className={page==="home"?"current":""} onClick={()=>linkTo("")}>Beranda</button><button className={page==="library"?"current":""} onClick={()=>linkTo("jelajah/1")}>100 Cerita</button><button className={page==="progress"?"current":""} onClick={()=>linkTo("perjalanan")}>Perjalanan Kita</button></nav></div></header>}
 function Home({completed,lastStory}){
  const recommend=ALL.find(s=>s.id===lastStory)||LEVELS[0].stories[0];
- const [guideTab,setGuideTab]=useState(null);
  return <main>
-  <section className="hero wrap"><div className="hero-card"><div className="hero-side-illustration" aria-hidden="true"><SceneArt story={LEVELS[0].stories[0]}/></div><div className="hero-copy">
+  <section className="hero wrap"><div className="hero-card">
    <p className="eyebrow"><span className="blue-dot">●</span> CERITA & AKTIVITAS ADAB UNTUK KELUARGA</p>
    <h1>Satu cerita kecil.<br/>Makna yang besar.</h1>
    <h2>Mendengar. Memahami. Meneladani.</h2>
    <p className="hero-desc">Waktu berkualitas untuk orang tua dan anak, melalui cerita Islami, percakapan hangat, dan aksi kebaikan yang sederhana.</p>
    <Button onClick={()=>linkTo("jelajah/1")}>Mulai Sekarang <span className="circle-arrow">›</span></Button>
-  </div></div></section>
-  <section className="guide-panel wrap"><h2><span className="guide-emblem">☺</span> Panduan Singkat untuk Aba & Umma</h2>
-    <div className="guide-grid guide-quick-links">
-      <button className={guideTab==="cara"?"open":""} onClick={()=>setGuideTab(guideTab==="cara"?null:"cara")} aria-expanded={guideTab==="cara"}><span>▤</span> Cara Menggunakan</button>
-      <button className={guideTab==="alur"?"open":""} onClick={()=>setGuideTab(guideTab==="alur"?null:"alur")} aria-expanded={guideTab==="alur"}><span>♧</span> Alur 3 Tahap</button>
-      <button className={guideTab==="manfaat"?"open":""} onClick={()=>setGuideTab(guideTab==="manfaat"?null:"manfaat")} aria-expanded={guideTab==="manfaat"}><span>🌱</span> Manfaat untuk Anak</button>
+  </div></section>
+  <section className="guide-panel wrap"><h2><span className="guide-emblem">•••</span> Panduan Singkat untuk Aba & Umma</h2>
+    <div className="guide-grid">
+      <article><span className="guide-icon">▤</span><small>LANGKAH 01</small><h3>Pilih cerita</h3><p>Cari cerita sesuai usia, tingkat, atau nilai adab yang ingin dibahas.</p></article>
+      <article><span className="guide-icon">☏</span><small>LANGKAH 02</small><h3>Bacakan & tanya</h3><p>Orang tua membaca. Anak mendengar dan menjawab secara lisan.</p></article>
+      <article><span className="guide-icon">✧</span><small>LANGKAH 03</small><h3>Praktikkan kebaikan</h3><p>Hubungkan hikmah cerita dengan pengalaman sehari-hari.</p></article>
     </div>
-    {guideTab&&<div className="guide-expanded">
-      {guideTab==="cara"&&<p><b>Mulai dengan satu cerita.</b> Pilih tingkat, bacakan cerita dengan tenang, lalu gunakan pertanyaan sebagai bahan obrolan. Anak tidak harus menatap layar atau mengetik jawaban.</p>}
-      {guideTab==="alur"&&<p><b>Mendengar → Memahami → Meneladani.</b> Orang tua membacakan, menanyakan isi cerita secara lisan, lalu mengajak anak membahas contoh situasi dan satu tindakan kebaikan sederhana.</p>}
-      {guideTab==="manfaat"&&<p><b>Belajar bersama tanpa tekanan nilai.</b> Cerita dirancang untuk melatih menyimak, bernalar sesuai tingkat, berbicara tentang perasaan, dan mengenali contoh adab sehari-hari.</p>}
-    </div>}
   </section>
   <section className="home-content wrap">
     <div className="section-heading"><div><span className="kicker">100 CERITA · 5 TINGKAT</span><h2>Temukan cerita yang cocok.</h2><p>Setiap tingkat memiliki 20 cerita dengan pertanyaan yang semakin mendalam.</p></div><button className="subtle-link" onClick={()=>linkTo("jelajah/1")}>Lihat semua cerita ↗</button></div>
@@ -84,7 +77,7 @@ function Library({level,completed,favorites,toggleFavorite}){
  <div className="library-title">Yuk, pilih ceritanya <span>({filtered.length})</span></div>
  <div className="library-tools"><label className="search-bar"><span>⌕</span><input placeholder="Cari judul, tema, atau nilai adab..." value={query} onChange={e=>setQuery(e.target.value)} aria-label="Cari cerita"/></label><div className="library-filters"><button className={filter==="semua"?"chosen":""} onClick={()=>setFilter("semua")}>Semua</button><button className={filter==="tersimpan"?"chosen":""} onClick={()=>setFilter("tersimpan")}>Disimpan</button><button className={filter==="selesai"?"chosen":""} onClick={()=>setFilter("selesai")}>Sudah dibaca</button></div></div>
  <div className="folder-board"><div className="folder-grid">{filtered.map(s=><article className="folder-item" key={s.id}>
-   <button onClick={()=>linkTo("cerita/"+s.id+"/mendengar")} className="folder-cover has-illustration" aria-label={"Buka cerita "+s.title}><><SceneArt story={s}/><span className="folder-illustration-action">Mulai cerita ↗</span></></button>
+   <button onClick={()=>linkTo("cerita/"+s.id+"/mendengar")} className={"folder-cover"+(ILLUSTRATED_STORIES[s.id]?" has-illustration":"")} aria-label={"Buka cerita "+s.title}>{ILLUSTRATED_STORIES[s.id]?<><SceneArt story={s}/><span className="folder-illustration-action">Buka cerita ↗</span></>:<><span>Mulai cerita</span><span className="folder-arrow">↗</span></>}</button>
    <div className="folder-meta"><span>• CERITA {s.id}</span><span className="folder-mini-tag">NILAI ADAB</span></div>
    <h3><button onClick={()=>linkTo("cerita/"+s.id+"/mendengar")}>{s.title}</button></h3>
    <div className="folder-foot"><span className="value-tag">{s.lifeValue}</span><button className={"favorite "+(favorites.includes(s.id)?"saved":"")} aria-pressed={favorites.includes(s.id)} aria-label={(favorites.includes(s.id)?"Hapus dari":"Simpan ke")+" favorit "+s.title} onClick={()=>toggleFavorite(s.id)}>{favorites.includes(s.id)?"♥":"♡"}</button></div>
@@ -93,33 +86,21 @@ function Library({level,completed,favorites,toggleFavorite}){
  <p className="library-note">✦ Tidak perlu menyelesaikan semuanya sekaligus. Pilih satu cerita, lalu temukan maknanya bersama.</p>
  </main>;
 }
-function StoryHeader({story,stage}){const n=Number(story.id.split(".")[0]);const step=STAGES.findIndex(x=>x.slug===stage)+1;return <><div className="section-top story-top"><div><div className="level-badge"><b># Tingkat {n}</b><span>• {FOCUS[n-1]}</span></div><p>│ Cerita {story.id} — {story.title}</p></div><span className="story-page-count">{step} / 3</span></div><div className="story-bar"><button className="story-back" onClick={()=>linkTo("jelajah/"+n)}>← Daftar cerita</button><StepTabs id={story.id} stage={stage}/></div></>}
+function StoryHeader({story,stage}){const n=Number(story.id.split(".")[0]);return <><div className="section-top story-top"><div><div className="level-badge"><b># Tingkat {n}</b><span>• {FOCUS[n-1]}</span></div><p>│ {DESCRIPTIONS[n-1]}</p></div><Logo/></div><button className="story-back" onClick={()=>linkTo("jelajah/"+n)}>← Kembali ke daftar cerita</button><div className="story-identity"><span>CERITA {story.id} • {story.lifeValue}</span><h1>{story.title}</h1></div><StepTabs id={story.id} stage={stage}/></>}
 function getAnswer(q){const str=String(q.answer||"Panduan belum tersedia");if(q.type==="mc"&&/^[A-D]$/i.test(str)&&Array.isArray(q.options)){let opt=q.options.find(x=>x.startsWith(str+"."));return opt||str;}return str}
 function Reading({story,fontSize,setFontSize}){
  return <><p className="stage-hint">• Orang tua membacakan cerita dengan tenang. Anak cukup mendengarkan.</p><div className="reading-art"><SceneArt story={story}/></div>
  <article className="reading-paper"><div className="paper-bar"><span>📖 WAKTU BERCERITA</span><div className="font-controls" aria-label="Ukuran teks"><button disabled={fontSize<=16} onClick={()=>setFontSize(Math.max(16,fontSize-2))} aria-label="Perkecil huruf">A−</button><button disabled={fontSize>=26} onClick={()=>setFontSize(Math.min(26,fontSize+2))} aria-label="Perbesar huruf">A+</button></div></div><div className="story-text" style={{fontSize:fontSize+"px"}}>{story.text.split(/\n{2,}/).map((p,i)=><p key={i}>{p}</p>)}</div></article>
  {story.newWords?.length>0&&<details className="story-vocab"><summary>📚 Kosakata dalam cerita</summary><div>{story.newWords.map((word,i)=><p key={i}><b>{word.term}:</b> {word.def}</p>)}</div></details>}
- <div className="story-actions"><Button onClick={()=>linkTo("cerita/"+story.id+"/memahami")}>Lanjut ke Pertanyaan →</Button></div></>;
-}
-function ParentAdabPreview({story,onOpen}){
- const parent=DISCUSSION_EXAMPLES[story.id]||{};
- const example=story.parentExample||parent.example||"Ajak anak menghubungkan cerita dengan kejadian nyata di rumah atau sekolah.";
- const follow=story.parentFollowUp||parent.followUp||story.reflect;
- const task=story.kindnessTask||OLD_TASKS[story.id]||"Praktikkan satu kebaikan sederhana bersama keluarga.";
- return <aside className="inline-adab"><div className="adab-header"><span className="adab-symbol">◎</span><div><span className="adab-kicker">Nilai Adab</span><h2>{story.lifeValue}</h2></div><span className="adab-step">3 / 3</span></div><p className="adab-description">{story.lifeValueDesc}</p>
- <div className="adab-block"><h3>♧ &nbsp; Contoh Situasi untuk Orang Tua</h3><p className="adab-highlight">{example}</p></div>
- <div className="adab-block"><h3>☏ &nbsp; Pertanyaan Lanjutan</h3><p>{follow}</p></div>
- <div className="adab-block"><h3>☆ &nbsp; Tantangan Kebaikan</h3><p className="adab-highlight">{task}</p></div>
- <button className="adab-more" onClick={onOpen}>Buka tahap Meneladani →</button>
- </aside>;
+ <div className="story-actions"><Button onClick={()=>linkTo("cerita/"+story.id+"/memahami")}>Lanjut ke Memahami →</Button></div></>;
 }
 function Understanding({story,notes,setNotes}){
  const [guide,setGuide]=useState(false);useEffect(()=>{setGuide(false)},[story.id]);
  return <><p className="stage-hint">• Tanya jawab lisan. Bacakan pertanyaan dan beri anak waktu menjawab dengan kata-katanya sendiri.</p>
  <div className="qa-grid"><section className="qa-card"><div className="qa-heading"><h2>PERTANYAAN</h2><span>{story.questions.length} pertanyaan</span></div><ol className="questions">{story.questions.map((q,i)=><li key={i}><span className="q-no">{String(i+1).padStart(2,"0")}</span><div><p>{q.q}</p>{q.type==="mc"&&<ul className="choices">{q.options?.map((o,j)=><li key={j}>{o}</li>)}</ul>}{q.type==="tf"&&<small>Jawab lisan: benar atau salah</small>}</div></li>)}</ol></section>
-<ParentAdabPreview story={story} onOpen={()=>linkTo("cerita/"+story.id+"/meneladani")}/></div>
+ <aside className="parent-scores"><h2>CATATAN ORANG TUA</h2><p>Setelah anak menjawab, tandai untuk membantu obrolan. Ini bukan nilai ujian.</p><div className="score-head"><span>NO.</span><span>PAHAM</span><span>BANTU LAGI</span></div>{story.questions.map((q,i)=><div className="score-row" key={i}><span>{i+1}</span><button className={notes[i]==="ya"?"yes selected":"yes"} aria-label={"Pertanyaan "+(i+1)+" dipahami"} aria-pressed={notes[i]==="ya"} onClick={()=>setNotes({...notes,[i]:notes[i]==="ya"?null:"ya"})}>✓</button><button className={notes[i]==="lagi"?"no selected":"no"} aria-label={"Pertanyaan "+(i+1)+" butuh bantuan"} aria-pressed={notes[i]==="lagi"} onClick={()=>setNotes({...notes,[i]:notes[i]==="lagi"?null:"lagi"})}>↻</button></div>)}<div className="parent-note"><b>💬 Tips Aba & Umma</b><p>Hargai usaha anak. Tidak perlu memaksa jawaban persis sama dengan panduan.</p></div></aside></div>
  <section className="answer-panel">{!guide?<button className="answer-button" onClick={()=>setGuide(true)} aria-expanded={false}>◉ &nbsp; Lihat panduan jawaban <span>↓</span></button>:<><div className="answer-open"><h2>🔑 Panduan jawaban untuk orang tua</h2>{story.questions.map((q,i)=><div className="answer-row" key={i}><b>{i+1}.</b><span>{getAnswer(q)}</span></div>)}<p>Tidak perlu menuntut anak menjawab dengan kalimat yang persis sama.</p></div><button className="answer-hide" onClick={()=>setGuide(false)} aria-expanded={true}>◉ &nbsp; Sembunyikan panduan ↑</button></>}</section>
- <details className="oral-notes"><summary>Catatan jawaban lisan untuk orang tua (opsional)</summary> <aside className="parent-scores"><h2>CATATAN ORANG TUA</h2><p>Setelah anak menjawab, tandai untuk membantu obrolan. Ini bukan nilai ujian.</p><div className="score-head"><span>NO.</span><span>PAHAM</span><span>BANTU LAGI</span></div>{story.questions.map((q,i)=><div className="score-row" key={i}><span>{i+1}</span><button className={notes[i]==="ya"?"yes selected":"yes"} aria-label={"Pertanyaan "+(i+1)+" dipahami"} aria-pressed={notes[i]==="ya"} onClick={()=>setNotes({...notes,[i]:notes[i]==="ya"?null:"ya"})}>✓</button><button className={notes[i]==="lagi"?"no selected":"no"} aria-label={"Pertanyaan "+(i+1)+" butuh bantuan"} aria-pressed={notes[i]==="lagi"} onClick={()=>setNotes({...notes,[i]:notes[i]==="lagi"?null:"lagi"})}>↻</button></div>)}<div className="parent-note"><b>💬 Tips Aba & Umma</b><p>Hargai usaha anak. Tidak perlu memaksa jawaban persis sama dengan panduan.</p></div></aside></details> <div className="story-actions split"><Button light onClick={()=>linkTo("cerita/"+story.id+"/mendengar")}>← Mendengar</Button><Button onClick={()=>linkTo("cerita/"+story.id+"/meneladani")}>Lanjut ke Meneladani →</Button></div>
+ <div className="story-actions split"><Button light onClick={()=>linkTo("cerita/"+story.id+"/mendengar")}>← Mendengar</Button><Button onClick={()=>linkTo("cerita/"+story.id+"/meneladani")}>Lanjut ke Meneladani →</Button></div>
  </>;
 }
 function Reflection({story,completed,onFinish}){
