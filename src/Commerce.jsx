@@ -81,6 +81,17 @@ export function CommerceHome({onExplore,onStory,onPricing,onHow}) {
    </div>
   </section>
 
+  <section className="ref-home-guide" aria-label="Panduan singkat untuk orang tua">
+    <div className="rc-container ref-home-guide-panel">
+      <h2><span aria-hidden="true">◉</span> Panduan Singkat untuk Aba & Umma</h2>
+      <div className="ref-guide-steps">
+        <article><span className="ref-guide-number">01</span><h3>Pilih Cerita</h3><p>Pilih satu dari 100 cerita sesuai tingkat pemahaman anak.</p></article>
+        <article><span className="ref-guide-number">02</span><h3>Bacakan & Tanya</h3><p>Orang tua membaca; anak menjawab secara lisan, tanpa perlu menatap layar.</p></article>
+        <article><span className="ref-guide-number">03</span><h3>Temukan Hikmah</h3><p>Gunakan contoh situasi nyata dan tantangan kebaikan untuk diterapkan bersama.</p></article>
+      </div>
+    </div>
+  </section>
+
   <section className="co-statement"><div className="rc-container"><span>✺</span><p>“Bukan sekadar anak belajar memahami cerita, melainkan <strong>orang tua dan anak menemukan makna bersama.</strong>”</p></div></section>
 
   <section className="co-section co-light">

@@ -3,6 +3,7 @@ import { LEVELS } from "./content";
 import { BrandMark, StoryArt } from "./Visuals";
 import { CommerceHome, PlansView } from "./Commerce";
 import { DISCUSSION_EXAMPLES } from "./discussion";
+import "./reference-theme.css";
 
 const TOTAL = LEVELS.reduce((sum, level) => sum + level.stories.length, 0);
 const ALL = LEVELS.flatMap(level => level.stories.map(story => ({...story, levelNum: level.level, levelName: level.title.split(": ").slice(1).join(": ")})));
@@ -58,6 +59,7 @@ function App() {
   const [showParentNotes, setShowParentNotes] = useState(false);
   const [done, setDone] = useState(getSaved);
   const [storySearch, setStorySearch] = useState("");
+  const [oralNotes, setOralNotes] = useState({});
 
   useEffect(() => {
     try { localStorage.setItem("ruang_cendikia_progress_v1", JSON.stringify(done)); } catch {}
@@ -67,7 +69,7 @@ function App() {
   const explore = level => { setActiveLevel(level); navigate("explore"); };
   const openStory = story => {
     setActiveStory(story); setStage(0); setQuestionIndex(0); setShowAnswer(false);
-    setShowVocabulary(false); setShowParentNotes(false); navigate("story");
+    setShowVocabulary(false); setShowParentNotes(false); setOralNotes({}); navigate("story");
   };
   const nextStage = next => { setStage(next); setShowAnswer(false); window.scrollTo({top:0,behavior:"smooth"}); };
   const changeQuestion = next => { setQuestionIndex(next); setShowAnswer(false); };
@@ -104,40 +106,39 @@ function App() {
 
       {view === "pricing" && <PlansView onExplore={explore} onHome={()=>navigate("home")}/>}
 
-      {view === "explore" && <section className="rc-container rc-inner-page">
-        <div className="rc-page-heading">
-          <span className="rc-kicker">KOLEKSI CERITA KITA</span>
-          <h1>Pilih cerita, mulai <em>bermakna.</em></h1>
-          <p>{TOTAL} cerita dalam 5 tingkatan, masing-masing 20 cerita. Pilih sesuai kesiapan anak; setiap cerita menyimpan pelajaran adab yang bisa dipraktikkan.</p>
+      {view === "explore" && <section className="rc-container rc-inner-page ref-library-page">
+        <div className="ref-level-banner">
+          <div className="ref-level-identity">
+            <div className="ref-level-chip"><strong># Tingkat {activeLevel+1}</strong><span>• {LEVEL_DETAILS[activeLevel].short}</span></div>
+            <p><span aria-hidden="true">│</span> {LEVELS[activeLevel].desc}</p>
+          </div>
+          <div className="ref-level-brand"><BrandMark size={54}/><span>Ruang<br/><strong>Cendekia</strong></span></div>
         </div>
-        <div className="rc-level-tabs" role="group" aria-label="Pilih tingkat pemahaman">
-          {LEVELS.map((lvl,i) => <button key={lvl.level} className={activeLevel===i?"chosen":""} onClick={() => {setActiveLevel(i);setStorySearch("");}}>
-            <span>{LEVEL_DETAILS[i].icon}</span> Tingkat {i+1}
+        <div className="rc-level-tabs ref-level-selector" role="group" aria-label="Pilih tingkat pemahaman">
+          {LEVELS.map((lvl,i) => <button key={lvl.level} aria-pressed={activeLevel===i} className={activeLevel===i?"chosen":""} onClick={()=>{setActiveLevel(i);setStorySearch("");}}>
+            <span>#{i+1}</span> Tingkat {i+1}
           </button>)}
         </div>
-        <div className={"rc-explore-intro rc-"+LEVEL_DETAILS[activeLevel].color}>
-          <div><span>TINGKAT {activeLevel+1} • {LEVELS[activeLevel].stories.length} CERITA</span><h2>{LEVELS[activeLevel].title.split(": ").slice(1).join(": ")}</h2><p>{LEVELS[activeLevel].desc}</p></div>
-          <div className="rc-explore-intro-icon">{LEVEL_DETAILS[activeLevel].icon}</div>
+        <div className="rc-collection-bar ref-library-heading">
+          <h1>Yuk, pilih ceritanya <span>({filtered.length})</span></h1>
+          <label className="rc-search"><span aria-hidden="true">⌕</span><input value={storySearch} onChange={event=>setStorySearch(event.target.value)} placeholder="Cari judul atau nilai adab..." aria-label="Cari cerita"/></label>
         </div>
-        <div className="rc-collection-bar">
-          <h3>Yuk, pilih ceritanya <span>({filtered.length})</span></h3>
-          <label className="rc-search"><span>⌕</span><input value={storySearch} onChange={event=>setStorySearch(event.target.value)} placeholder="Cari judul atau nilai adab..." aria-label="Cari cerita"/></label>
+        <div className="ref-folder-board">
+          <div className="rc-story-grid ref-folder-grid">
+            {filtered.map(story => <article className={"ref-story-item"+(done.includes(story.id)?" ref-is-done":"")} key={story.id}>
+              <button className="ref-folder-cover" onClick={()=>openStory(story)} aria-label={"Mulai cerita "+story.title}>
+                <span className="ref-folder-spark" aria-hidden="true">✦</span>
+                <span className="ref-folder-action">Mulai cerita <span aria-hidden="true">↗</span></span>
+              </button>
+              <div className="ref-story-meta"><span>• CERITA {story.id}</span><b>NILAI ADAB</b></div>
+              <button className="ref-story-title" onClick={()=>openStory(story)}>{story.title}</button>
+              <span className="ref-story-value">{story.lifeValue}</span>
+              {done.includes(story.id) && <span className="ref-done-label">✓ Sudah dibaca</span>}
+            </article>)}
+            {filtered.length===0 && <p className="ref-folder-empty">Cerita tidak ditemukan. Coba kata kunci lain.</p>}
+          </div>
         </div>
-        <div className="rc-story-grid">
-          {filtered.map((story,index) => <article className="rc-story-card" key={story.id}>
-            <div className={"rc-story-thumb rc-"+LEVEL_DETAILS[activeLevel].color}>
-              <span className="rc-card-number">CERITA {story.id}</span><StoryArt storyId={story.id} title={story.title} className="rc-story-art"/>
-              {done.includes(story.id) && <span className="rc-complete-stamp">✓ Sudah selesai</span>}
-            </div>
-            <div className="rc-story-content">
-              <span className="rc-mini-label">NILAI ADAB</span><div className="rc-story-value">{story.lifeValue}</div>
-              <h3>{story.title}</h3><p>{story.text}</p>
-              <button className="rc-card-cta" onClick={() => openStory(story)}>Mulai cerita <span>↗</span></button>
-            </div>
-          </article>)}
-          {filtered.length===0 && <div className="rc-empty">Cerita tidak ditemukan. Coba kata kunci lain.</div>}
-        </div>
-        <p className="rc-explore-hint">💡 Tips: Tidak harus menuntaskan satu tingkat dalam sehari. Yang penting, anak nyaman bercerita bersama.</p>
+        <p className="rc-explore-hint">✦ Tidak perlu menghabiskan semua cerita sekaligus. Pilih satu kisah, bacakan, lalu temukan maknanya bersama anak.</p>
       </section>}
 
       {view === "story" && activeStory && <section className="rc-container rc-story-page">
@@ -165,29 +166,46 @@ function App() {
           <div className="rc-stage-bottom"><span>💛 Bacakan perlahan, beri jeda, dan nikmati momen bersama.</span><button className="rc-btn rc-btn-primary" onClick={() => nextStage(1)}>Selesai Membaca, Lanjut Tanya <span>→</span></button></div>
         </div>}
 
-        {stage===1 && <div className="rc-reading-card">
-          <div className="rc-read-head"><span>💬 TANYA JAWAB LISAN</span><span>Langkah 2 dari 3</span></div>
-          <h2>Yuk, ajak anak bercerita.</h2>
-          <p className="rc-stage-intro">Bacakan satu pertanyaan, lalu tunggu jawaban anak. Pertanyaan dan pilihan jawaban hanya untuk dibacakan, bukan diisi di layar.</p>
-          <div className="rc-question-track"><div style={{width: ((questionIndex+1)/activeStory.questions.length*100)+"%"}}/></div>
-          <div className="rc-question-box">
-            <div className="rc-question-illustration"><StoryArt storyId={activeStory.id} title={activeStory.title}/></div>
-            <div className="rc-question-meta"><span>PERTANYAAN {questionIndex+1} / {activeStory.questions.length}</span><span>👂 Dengarkan jawabannya</span></div>
-            <h3>{currentQuestion?.q}</h3>
-            {currentQuestion?.type==="mc" && <div className="rc-options"><p>Jika perlu, bacakan pilihan berikut:</p>{currentQuestion.options?.map((opt,i)=><div key={i}>{opt}</div>)}</div>}
-            {currentQuestion?.type==="tf" && <p className="rc-tf">Tanyakan: “Menurutmu, benar atau salah?”</p>}
-            {showAnswer && <div className="rc-answer"><strong>🔑 Panduan jawaban untuk orang tua</strong><p>{currentQuestion?.answer}</p><small>Tidak perlu menuntut anak menjawab dengan kalimat yang persis sama.</small></div>}
-            <button className="rc-reveal" onClick={() => setShowAnswer(!showAnswer)}>{showAnswer?"🙈 Sembunyikan panduan":"👁 Lihat panduan jawaban"}</button>
+        {stage===1 && <div className="ref-comprehension">
+          <div className="ref-step-instruction"><span className="ref-instruction-dot">•</span> Tanya jawab lisan. Pertanyaan untuk dibacakan, bukan diisi di layar.</div>
+          <div className="ref-question-layout">
+            <div className="ref-question-sheet">
+              <div className="ref-sheet-top"><strong>PERTANYAAN</strong><span>{activeStory.questions.length} pertanyaan</span></div>
+              <ol className="ref-question-list">
+                {activeStory.questions.map((q,i)=><li key={i}>
+                  <span className="ref-question-number">{String(i+1).padStart(2,"0")}</span>
+                  <div><p>{q.q}</p>
+                    {q.type==="tf" && <small>Jawab lisan: benar atau salah</small>}
+                    {q.type==="mc" && q.options?.length>0 && <ul className="ref-mc-options">{q.options.map((opt,j)=><li key={j}>{opt}</li>)}</ul>}
+                  </div>
+                </li>)}
+              </ol>
+            </div>
+            <aside className="ref-question-sidebar ref-oral-sidebar">
+              <h3>CATATAN ORANG TUA</h3>
+              <p>Setelah anak menjawab lisan, tandai responsnya. Ini bukan nilai ujian.</p>
+              <div className="ref-oral-legend"><span>✓ Paham</span><span>↻ Bantu lagi</span></div>
+              <div className="ref-oral-rows">
+                {activeStory.questions.map((q,i)=><div className="ref-oral-row" key={i}>
+                  <span aria-label={"Pertanyaan "+(i+1)}>{i+1}</span>
+                  <button className={oralNotes[i]==="paham"?"chosen understood":""} aria-pressed={oralNotes[i]==="paham"} aria-label={"Anak memahami pertanyaan "+(i+1)} onClick={()=>setOralNotes(v=>({...v,[i]:v[i]==="paham"?null:"paham"}))}>✓</button>
+                  <button className={oralNotes[i]==="bantu"?"chosen revisit":""} aria-pressed={oralNotes[i]==="bantu"} aria-label={"Perlu membantu lagi pada pertanyaan "+(i+1)} onClick={()=>setOralNotes(v=>({...v,[i]:v[i]==="bantu"?null:"bantu"}))}>↻</button>
+                </div>)}
+              </div>
+              <div className="ref-side-tip"><strong>💬 Tips Aba & Umma</strong><span>Berikan jeda dan apresiasi usaha anak. Catatan ini hanya untuk sesi saat ini.</span></div>
+            </aside>
           </div>
-          <div className="rc-question-nav">
-            <button className="rc-btn rc-btn-secondary" disabled={questionIndex===0} onClick={() => changeQuestion(questionIndex-1)}>← Sebelumnya</button>
-            {questionIndex < activeStory.questions.length-1 ?
-              <button className="rc-btn rc-btn-primary" onClick={() => changeQuestion(questionIndex+1)}>Pertanyaan Berikutnya →</button> :
-              <button className="rc-btn rc-btn-primary" onClick={() => nextStage(2)}>Lanjut ke Hikmah →</button>}
+          <div className="ref-answer-panel">
+            <button className="ref-answer-toggle" aria-expanded={showAnswer} onClick={()=>setShowAnswer(!showAnswer)}>
+              <span aria-hidden="true">{showAnswer?"◉":"◉"}</span> {showAnswer?"Sembunyikan panduan jawaban":"Lihat panduan jawaban"} <span aria-hidden="true">{showAnswer?"↑":"↓"}</span>
+            </button>
+            {showAnswer && <div className="ref-answer-list">
+              <h3>🔑 Panduan jawaban untuk orang tua</h3>
+              {activeStory.questions.map((q,i)=><div className="ref-answer-item" key={i}><b>{i+1}.</b><p>{q.answer}</p></div>)}
+              <p className="ref-answer-note">Tidak perlu menuntut anak menjawab dengan kalimat yang persis sama. Gunakan jawaban sebagai panduan diskusi.</p>
+            </div>}
           </div>
-          <div className="rc-parent-accordion"><button onClick={() => setShowParentNotes(!showParentNotes)} aria-expanded={showParentNotes}>💛 Tips untuk orang tua <span>{showParentNotes?"−":"+"}</span></button>
-            {showParentNotes && <div><p>{practice?.tip}</p><p>Jika anak kesulitan, bantu dengan mengingatkan bagian cerita, bukan langsung memberikan jawaban. Hargai setiap usahanya.</p></div>}
-          </div>
+          <div className="ref-next-actions"><button className="rc-btn rc-btn-secondary" onClick={()=>nextStage(0)}>← Kembali ke cerita</button><button className="rc-btn rc-btn-primary" onClick={()=>nextStage(2)}>Lanjut ke Meneladani →</button></div>
         </div>}
 
         {stage===2 && <div className="rc-reading-card">

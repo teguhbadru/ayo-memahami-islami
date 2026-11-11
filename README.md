@@ -31,6 +31,15 @@ Setiap tingkat memuat 20 cerita. Tingkat 1 berfokus pada menemukan fakta, Tingka
 
 Konten baru perlu melalui peninjauan editorial, kesesuaian usia, dan materi Islami sebelum dipasarkan sebagai paket berbayar. Progres lokal masih di browser.
 
+## Desain referensi biru dan lime
+
+- Beranda dengan hero putih pada latar grid biru elektrik, tombol hijau lime, dan panduan 3 langkah untuk Aba & Umma.
+- Katalog 20 cerita per tingkat memakai **kartu folder biru** di panel lime, dengan judul dan nilai adab yang terbaca serta pencarian cerita.
+- Tampilan Mendengar berupa kartu gambar di atas teks cerita yang dipertahankan.
+- Tampilan Memahami menampilkan seluruh pertanyaan dalam satu panel, panduan jawaban yang bisa dibuka dan disembunyikan, serta catatan orang tua **Paham/Bantu lagi** di sesi yang sama—bukan penilaian permanen.
+- Tampilan Meneladani mempertahankan contoh kehidupan nyata, pertanyaan diskusi, dan tantangan kebaikan untuk tiap cerita.
+- Styling responsif untuk desktop dan HP di `src/reference-theme.css`. Penggunaan warna mengikuti screenshot referensi; ilustrasi painterly faceless per cerita belum lengkap. Untuk 85 cerita baru, sampul masih dekoratif dan tidak diklaim sebagai gambar adegan.
+
 ## Versi awal
 
 - Desain kartu cerita dengan ilustrasi vektor faceless khusus untuk semua 15 cerita; ikon logo didigitalkan dalam format SVG mengikuti bentuk lingkaran hijau dan lengkungan emas dari referensi pengguna.
