@@ -82,9 +82,7 @@ function GenericArt({story}){
 export const ILLUSTRATED_STORIES=Object.freeze({
  "1.1":"/illustrations/1-1.webp",
  "1.2":"/illustrations/1-2.webp",
- "1.3":"/illustrations/1-3.webp",
- "2.2":"/illustrations/2-2.webp",
- "3.4":"/illustrations/3-4.webp"
+ "1.3":"/illustrations/1-3.webp"
 });
 export function SceneArt({story}){
  if(!story)return null;
