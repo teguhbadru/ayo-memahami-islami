@@ -77,4 +77,18 @@ function GenericArt({story}){
  <text x="466" y="117" fontSize="36" textAnchor="middle" fontWeight="800" fill={ink} fontFamily="sans-serif" opacity=".7">CERITA {story.id}</text>
  </svg>
 }
-export function SceneArt({story}){if(!story)return null;return story.id==="1.1"?<OldWomanScene/>:<GenericArt story={story}/>;}
+// Bespoke image covers for the first five illustrated stories. The other stories
+// intentionally retain their original SVG fallback until production assets exist.
+export const ILLUSTRATED_STORIES=Object.freeze({
+ "1.1":"/illustrations/1-1.webp",
+ "1.2":"/illustrations/1-2.webp",
+ "1.3":"/illustrations/1-3.webp",
+ "2.2":"/illustrations/2-2.webp",
+ "3.4":"/illustrations/3-4.webp"
+});
+export function SceneArt({story}){
+ if(!story)return null;
+ const path=ILLUSTRATED_STORIES[story.id];
+ return path?<img src={path} alt={"Ilustrasi cerita "+story.title} loading="lazy" decoding="async" className="story-illustration-image" />:<GenericArt story={story}/>;
+}
+
