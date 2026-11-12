@@ -95,12 +95,56 @@ function Reading({story,fontSize,setFontSize}){
  <div className="story-actions"><Button onClick={()=>linkTo("cerita/"+story.id+"/memahami")}>Lanjut ke Memahami →</Button></div></>;
 }
 function Understanding({story,notes,setNotes}){
- const [guide,setGuide]=useState(false);useEffect(()=>{setGuide(false)},[story.id]);
- return <><p className="stage-hint">• Tanya jawab lisan. Bacakan pertanyaan dan beri anak waktu menjawab dengan kata-katanya sendiri.</p>
- <div className="qa-grid"><section className="qa-card"><div className="qa-heading"><h2>PERTANYAAN</h2><span>{story.questions.length} pertanyaan</span></div><ol className="questions">{story.questions.map((q,i)=><li key={i}><span className="q-no">{String(i+1).padStart(2,"0")}</span><div><p>{q.q}</p>{q.type==="mc"&&<ul className="choices">{q.options?.map((o,j)=><li key={j}>{o}</li>)}</ul>}{q.type==="tf"&&<small>Jawab lisan: benar atau salah</small>}</div></li>)}</ol></section>
- <aside className="parent-scores"><h2>CATATAN ORANG TUA</h2><p>Setelah anak menjawab, tandai untuk membantu obrolan. Ini bukan nilai ujian.</p><div className="score-head"><span>NO.</span><span>PAHAM</span><span>BANTU LAGI</span></div>{story.questions.map((q,i)=><div className="score-row" key={i}><span>{i+1}</span><button className={notes[i]==="ya"?"yes selected":"yes"} aria-label={"Pertanyaan "+(i+1)+" dipahami"} aria-pressed={notes[i]==="ya"} onClick={()=>setNotes({...notes,[i]:notes[i]==="ya"?null:"ya"})}>✓</button><button className={notes[i]==="lagi"?"no selected":"no"} aria-label={"Pertanyaan "+(i+1)+" butuh bantuan"} aria-pressed={notes[i]==="lagi"} onClick={()=>setNotes({...notes,[i]:notes[i]==="lagi"?null:"lagi"})}>↻</button></div>)}<div className="parent-note"><b>💬 Tips Aba & Umma</b><p>Hargai usaha anak. Tidak perlu memaksa jawaban persis sama dengan panduan.</p></div></aside></div>
- <section className="answer-panel">{!guide?<button className="answer-button" onClick={()=>setGuide(true)} aria-expanded={false}>◉ &nbsp; Lihat panduan jawaban <span>↓</span></button>:<><div className="answer-open"><h2>🔑 Panduan jawaban untuk orang tua</h2>{story.questions.map((q,i)=><div className="answer-row" key={i}><b>{i+1}.</b><span>{getAnswer(q)}</span></div>)}<p>Tidak perlu menuntut anak menjawab dengan kalimat yang persis sama.</p></div><button className="answer-hide" onClick={()=>setGuide(false)} aria-expanded={true}>◉ &nbsp; Sembunyikan panduan ↑</button></>}</section>
- <div className="story-actions split"><Button light onClick={()=>linkTo("cerita/"+story.id+"/mendengar")}>← Mendengar</Button><Button onClick={()=>linkTo("cerita/"+story.id+"/meneladani")}>Lanjut ke Meneladani →</Button></div>
+ const [index,setIndex]=useState(0);
+ const [guide,setGuide]=useState(false);
+ const heading=React.useRef(null);
+ const question=story.questions[index];
+ const number=index+1;
+ const total=story.questions.length;
+ const move=(next)=>{
+  setGuide(false);
+  setIndex(next);
+  heading.current?.focus();
+ };
+ const mark=(value)=>setNotes({...notes,[index]:notes[index]===value?null:value});
+
+ return <>
+  <p className="stage-hint">Bacakan pertanyaannya dan beri anak waktu untuk menjawab dengan kata-katanya sendiri.</p>
+  {question&&<div className="qa-grid">
+   <section className="qa-card">
+    <div className="qa-heading">
+     <h2 ref={heading} tabIndex={-1} aria-live="polite">Pertanyaan {number} dari {total}</h2>
+    </div>
+    <div className="questions">
+     <p>{question.q}</p>
+     {question.type==="mc"&&<ul className="choices">{question.options?.map(option=><li key={option}>{option}</li>)}</ul>}
+     {question.type==="tf"&&<small>Jawab lisan: benar atau salah</small>}
+    </div>
+    <div className="story-actions split">
+     <Button light disabled={index===0} onClick={()=>move(index-1)}>← Sebelumnya</Button>
+     {number<total&&<Button onClick={()=>move(index+1)}>Berikutnya →</Button>}
+    </div>
+   </section>
+   <aside className="parent-scores">
+    <h2>CATATAN ORANG TUA</h2>
+    <p>Tandai setelah anak menjawab.</p>
+    <div className="story-actions">
+     <Button light aria-pressed={notes[index]==="ya"} onClick={()=>mark("ya")}>{notes[index]==="ya"?"✓ ":""}Paham</Button>
+     <Button light aria-pressed={notes[index]==="lagi"} onClick={()=>mark("lagi")}>{notes[index]==="lagi"?"✓ ":""}Bantu lagi</Button>
+    </div>
+   </aside>
+  </div>}
+  {question&&<section className="answer-panel">
+   <button className="answer-button" onClick={()=>setGuide(!guide)} aria-expanded={guide} aria-controls="oral-answer">{guide?"Sembunyikan panduan":"Lihat panduan jawaban"}</button>
+   <div id="oral-answer" hidden={!guide} className="answer-open">
+    <h2>Panduan jawaban untuk orang tua</h2>
+    <p>{getAnswer(question)}</p>
+   </div>
+  </section>}
+  <div className="story-actions split">
+   <Button light onClick={()=>linkTo("cerita/"+story.id+"/mendengar")}>← Mendengar</Button>
+   <Button onClick={()=>linkTo("cerita/"+story.id+"/meneladani")}>Lanjut ke Meneladani →</Button>
+  </div>
  </>;
 }
 function Reflection({story,completed,onFinish}){
@@ -121,7 +165,7 @@ function Story({id,stage,completed,markComplete,setLastRead}){
  const [fontSize,setFontSize]=useState(20);const [notes,setNotes]=useState({});
  useEffect(()=>{setNotes({});setLastRead(id)},[id]);
  if(!story)return <main className="wrap missing"><h1>Cerita tidak ditemukan</h1><Button onClick={()=>linkTo("jelajah/1")}>Kembali ke katalog</Button></main>;
- return <main className="wrap story-page"><StoryHeader story={story} stage={stage}/>{stage==="mendengar"?<Reading story={story} fontSize={fontSize} setFontSize={setFontSize}/>:stage==="memahami"?<Understanding story={story} notes={notes} setNotes={setNotes}/>:<Reflection story={story} completed={completed.includes(id)} onFinish={()=>markComplete(id)}/>}</main>;
+ return <main className="wrap story-page"><StoryHeader story={story} stage={stage}/>{stage==="mendengar"?<Reading story={story} fontSize={fontSize} setFontSize={setFontSize}/>:stage==="memahami"?<Understanding key={id} story={story} notes={notes} setNotes={setNotes}/>:<Reflection story={story} completed={completed.includes(id)} onFinish={()=>markComplete(id)}/>}</main>;
 }
 function Progress({completed,favorites,lastRead}){
  return <main className="wrap progress-page"><div className="progress-intro"><span className="kicker">CATATAN CERITA KITA</span><h1>Setiap cerita punya makna.</h1><p>Perjalanan ini bukan tentang cepat menyelesaikan semuanya. Nikmati cerita sesuai kebutuhan keluarga.</p></div>
