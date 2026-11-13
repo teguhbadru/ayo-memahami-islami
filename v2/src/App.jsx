@@ -3,6 +3,7 @@ import {LEVELS} from "./data/content";
 import {DISCUSSION_EXAMPLES} from "./data/discussion";
 import {SceneArt,BrandIcon,ILLUSTRATED_STORIES} from "./Art";
 import "./styles.css";
+import "./full-photo-covers.css";
 
 const ALL=LEVELS.flatMap(level=>level.stories);
 const STAGES=[{slug:"mendengar",label:"Mendengar"},{slug:"memahami",label:"Memahami"},{slug:"meneladani",label:"Meneladani"}];
@@ -77,7 +78,7 @@ function Library({level,completed,favorites,toggleFavorite}){
  <div className="library-title">Yuk, pilih ceritanya <span>({filtered.length})</span></div>
  <div className="library-tools"><label className="search-bar"><span>⌕</span><input placeholder="Cari judul, tema, atau nilai adab..." value={query} onChange={e=>setQuery(e.target.value)} aria-label="Cari cerita"/></label><div className="library-filters"><button className={filter==="semua"?"chosen":""} onClick={()=>setFilter("semua")}>Semua</button><button className={filter==="tersimpan"?"chosen":""} onClick={()=>setFilter("tersimpan")}>Disimpan</button><button className={filter==="selesai"?"chosen":""} onClick={()=>setFilter("selesai")}>Sudah dibaca</button></div></div>
  <div className="folder-board"><div className="folder-grid">{filtered.map(s=><article className="folder-item" key={s.id}>
-   <button onClick={()=>linkTo("cerita/"+s.id+"/mendengar")} className={"folder-cover"+(ILLUSTRATED_STORIES[s.id]?" has-illustration":"")} aria-label={"Buka cerita "+s.title}>{ILLUSTRATED_STORIES[s.id]?<><SceneArt story={s}/><span className="folder-illustration-action">Buka cerita ↗</span></>:<><span>Mulai cerita</span><span className="folder-arrow">↗</span></>}</button>
+   <button onClick={()=>linkTo("cerita/"+s.id+"/mendengar")} className={"folder-cover"+(ILLUSTRATED_STORIES[s.id]?" has-illustration":"")} aria-label={"Buka cerita "+s.title}>{ILLUSTRATED_STORIES[s.id]?<SceneArt story={s}/>:<><span>Mulai cerita</span><span className="folder-arrow">↗</span></>}</button>
    <div className="folder-meta"><span>• CERITA {s.id}</span><span className="folder-mini-tag">NILAI ADAB</span></div>
    <h3><button onClick={()=>linkTo("cerita/"+s.id+"/mendengar")}>{s.title}</button></h3>
    <div className="folder-foot"><span className="value-tag">{s.lifeValue}</span><button className={"favorite "+(favorites.includes(s.id)?"saved":"")} aria-pressed={favorites.includes(s.id)} aria-label={(favorites.includes(s.id)?"Hapus dari":"Simpan ke")+" favorit "+s.title} onClick={()=>toggleFavorite(s.id)}>{favorites.includes(s.id)?"♥":"♡"}</button></div>
